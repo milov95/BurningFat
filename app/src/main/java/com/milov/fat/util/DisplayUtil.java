@@ -6,23 +6,23 @@ import android.view.WindowManager;
 
 /**
  * Created by milov on 2015/8/21.
- * ¸ÃÀàÓÃÀ´´æ´¢ÆÁÄ»µÄ¿í¸ßÒÔ¼°dpÓëpxÖ®¼äµÄ×ª»»·½·¨
+ * å±å¹•æ˜¾ç¤ºå·¥å…·ç±»
  */
 public class DisplayUtil {
     /**
-     * µ¥Ò»ÊµÀı
+     * å•ä¸€å®ä¾‹
      */
     public static DisplayUtil displayUtil=null;
     /**
-     * ÆÁÄ»¿í(px)
+     * å±å¹•å®½(px)
      */
     public static float SCREEN_WIDTH;
     /**
-     * ÆÁÄ»¸ß(px)
+     * å±å¹•é«˜(px)
      */
     public static float SCREEN_HEIGHT;
     /**
-     * ÆÁÄ»ÃÜ¶È
+     * åˆ†è¾¨ç‡å¯†åº¦
      */
     private static float scale;
 
@@ -36,7 +36,7 @@ public class DisplayUtil {
     }
 
     /**
-     * »ñÈ¡µ¥Ò»ÊµÀı
+     * è·å–å•ä¸€å®ä¾‹
      * @param context
      * @return
      */
@@ -47,7 +47,7 @@ public class DisplayUtil {
     }
 
     /**
-     * dp×ªpx
+     * dpè½¬px
      * @param dp
      * @return
      */
