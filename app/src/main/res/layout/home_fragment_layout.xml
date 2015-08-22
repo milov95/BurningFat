@@ -3,15 +3,78 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <com.milov.fat.view.HomeCurveView
+        android:id="@+id/homeCurveView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         app:layout_heightPercent="40%"
         app:layout_widthPercent="100%"
+        />
+
+    <com.milov.fat.view.ActionBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/share_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/share"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textSize="19dp"
+            android:gravity="center" />
+
+        <ImageView
+            android:id="@+id/refresh_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/refresh"/>
+
+    </com.milov.fat.view.ActionBarLayout>
+
+    <TextView
+        android:id="@+id/circle_TextView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/circle"
+        android:layout_alignTop="@id/homeCurveView"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="食谱推荐"
+        android:textSize="25dp"
+        android:textColor="@color/blue"
+        />
+
+    <TextView
+        android:id="@+id/personal_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:padding="15dp"
+        android:text="个人中心"
+        android:textSize="15dp"
+        android:textStyle="normal"
+        android:textColor="@color/light_blue"
+        />
+
+    <TextView
+        android:id="@+id/mission_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="15dp"
+        android:text="任务中心"
+        android:textSize="15dp"
+        android:textColor="@color/light_blue"
         />
 
 </android.support.percent.PercentRelativeLayout>

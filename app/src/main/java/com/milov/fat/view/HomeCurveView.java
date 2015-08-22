@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -28,30 +27,38 @@ public class HomeCurveView extends View {
      * 屏幕尺寸工具类
      */
     private static DisplayUtil displayUtil;
+    /**
+     * 画笔
+     */
+    private Paint curvePaint;
 
-    public HomeCurveView(Context content){
-        super(content);
-        //得到屏幕尺寸工具类的单一实例
-        displayUtil = DisplayUtil.getInstance(getContext());
-        SCREEN_HEIGHT = displayUtil.SCREEN_HEIGHT;
-        SCREEN_WIDTH = displayUtil.SCREEN_WIDTH;
+    public HomeCurveView(Context context){
+        this(context,null);
     }
 
     public HomeCurveView(Context context, AttributeSet attrs){
         super(context,attrs);
+
         //得到屏幕尺寸工具类的单一实例
-        displayUtil = DisplayUtil.getInstance(getContext());
+        displayUtil = DisplayUtil.getInstance(context);
         SCREEN_HEIGHT = displayUtil.SCREEN_HEIGHT;
         SCREEN_WIDTH = displayUtil.SCREEN_WIDTH;
-    }
 
-    @Override
-    public void onDraw(Canvas canvas){
-        Paint curvePaint= new Paint();
+        //配置画笔
+        curvePaint = new Paint();
         curvePaint.setAntiAlias(true);
         curvePaint.setColor(0xff00aaf9);
         curvePaint.setStyle(Paint.Style.FILL);
         curvePaint.setStrokeWidth(10);
+    }
+
+    @Override
+    protected void onMeasure(int defaultSize, int measureSpec){
+        super.onMeasure(defaultSize , measureSpec);
+    }
+
+    @Override
+    public void onDraw(Canvas canvas){
 
         Path curvePath = new Path();
         curvePath.moveTo(0,SCREEN_HEIGHT/20);

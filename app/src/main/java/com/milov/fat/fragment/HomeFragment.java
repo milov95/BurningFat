@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.milov.fat.R;
 
 /**
- * Created by Administrator on 2015/8/22.
+ * Created by Milov on 2015/8/22.
  */
 public class HomeFragment extends Fragment{
     @Override
