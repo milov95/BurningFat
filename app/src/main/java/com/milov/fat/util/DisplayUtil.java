@@ -5,7 +5,7 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 /**
- * Created by milov on 2015/8/21.
+ * Created by Milov on 2015/8/21.
  * 屏幕显示工具类
  */
 public class DisplayUtil {

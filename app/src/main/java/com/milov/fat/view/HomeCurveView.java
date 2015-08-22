@@ -13,6 +13,7 @@ import com.milov.fat.util.DisplayUtil;
 
 /**
  * Created by Milov on 2015/8/21.
+ * 首页的曲线背景
  */
 public class HomeCurveView extends View {
     /**
