@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <com.milov.fat.view.ActionBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/red">
+
+        <ImageView
+            android:id="@+id/back_personal_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/back"
+            android:padding="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="个人中心"
+            android:textSize="20dp"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:padding="10dp"/>
+
+        <ImageView
+            android:id="@+id/setting_personal_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/setting"
+            android:padding="10dp"/>
+
+    </com.milov.fat.view.ActionBarLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red"
+        app:layout_heightPercent="50%"
+        app:layout_widthPercent="100%">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="运动状态-日线图"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"/>
+
+    </RelativeLayout>
+
+</android.support.percent.PercentRelativeLayout>

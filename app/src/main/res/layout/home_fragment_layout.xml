@@ -16,27 +16,83 @@
 
     <com.milov.fat.view.ActionBarLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="52dp">
 
         <ImageView
-            android:id="@+id/share_button"
+            android:id="@+id/share_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/share"/>
+            android:src="@drawable/share"
+            android:padding="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:textSize="19dp"
-            android:gravity="center" />
+            android:gravity="center"
+            android:padding="10dp"/>
 
         <ImageView
-            android:id="@+id/refresh_button"
+            android:id="@+id/refresh_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/refresh"/>
+            android:src="@drawable/refresh"
+            android:padding="10dp"/>
 
     </com.milov.fat.view.ActionBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/home_test"
+        android:orientation="horizontal"
+        android:layout_marginTop="100dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设备状态："
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="步数："/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="卡路里："/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/test_device_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/test_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/test_cal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/circle_TextView"

@@ -2,6 +2,7 @@ package com.milov.fat.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.milov.fat.util.DisplayUtil;
@@ -42,19 +43,20 @@ public class ActionBarLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
-        //获取标题栏高度
-        BAR_HEIGHT=getHeight();
     }
 
     @Override
     public void onLayout(boolean changed, int left, int top, int right, int bottom){
+        //获取标题栏高度
+        BAR_HEIGHT=getHeight();
         //子控件的外边距
-        final int margin = displayUtil.dp2px(13);
+        final int margin = displayUtil.dp2px(0);
         //子控件的高度以及左右两个图标的宽度
         final int square = (int) BAR_HEIGHT - (2*margin);
         //部署控件
         //左边的图标
         getChildAt(0).layout(margin, margin, margin + square, margin + square);
+        Log.i("actionBar--layout", getChildAt(0).toString() + "-----"+BAR_HEIGHT+"|"+margin);
         //中间的文字
         getChildAt(1).layout(margin + square, margin, (int) SCREEN_WIDTH - margin - square,margin+square);
         //如果右边有图标，则部署

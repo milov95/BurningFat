@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.milov.fat.view.ActionBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/red">
+
+        <ImageView
+            android:id="@+id/back_mission_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/back"
+            android:padding="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="任务中心"
+            android:textSize="20dp"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:padding="10dp"/>
+
+    </com.milov.fat.view.ActionBarLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red"
+        app:layout_heightPercent="30%"
+        app:layout_widthPercent="100%"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/delete_mission_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="删除任务"
+            android:textSize="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/red"
+            android:background="@android:color/white"/>
+
+        <Button
+            android:id="@+id/reset_mission_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="重置任务"
+            android:textSize="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/delete_mission_button"
+            android:textColor="@color/red"
+            android:background="@android:color/white"/>
+
+    </RelativeLayout>
+</android.support.percent.PercentRelativeLayout>
