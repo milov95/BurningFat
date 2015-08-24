@@ -1,6 +1,8 @@
 package com.milov.fat.util;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import com.huawei.huaweiwearable.callback.IDeviceConnectStatusCallback;
 import com.huawei.huaweiwearable.callback.IResultReportCallback;
@@ -29,9 +31,17 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      */
     private int deviceStatus = DeviceConnectionState.DEVICE_UNKNOWN;
     /**
-     * 用户信息
+     * 与HomeActivity通信的handler
      */
-    private DataUserInfo userInfo;
+    Handler handler;
+    /**
+     * 得到的用户信息标识
+     */
+    public static final int USER_INFO = 1;
+    /**
+     * 得到的步数标识
+     */
+    public static final int TODAY_HEALTH = 2;
 
     /**
      * 获取设备连接状态
@@ -52,8 +62,9 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         DataUserInfo info = new DataUserInfo( 99, heightCM, weightKG, genderMan1Woman2, (int)(0.3*heightCM), (int)(0.45*heightCM),0);
         manager.setUserInfo(DeviceType.HUAWEI_TALKBAND_B2, info, new IResultReportCallback() {
             @Override
-            public void onSuccess(Object object)  {
+            public void onSuccess(Object object) {
                 Log.i("onSucess", "设置用户信息成功!");
+
             }
 
             @Override
@@ -66,20 +77,43 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
     /**
      * 获取用户信息
      */
-    public DataUserInfo getUserInfo(){
-        manager.getUserInfo(DeviceType.HUAWEI_TALKBAND_B2,new IResultReportCallback(){
+    public void getUserInfo(){
+        manager.getUserInfo(DeviceType.HUAWEI_TALKBAND_B2, new IResultReportCallback() {
             @Override
             public void onSuccess(Object object) {
                 Log.i("onSucess", "获取用户信息成功!");
-                userInfo = (DataUserInfo) object;
+                Message msg = handler.obtainMessage(USER_INFO, object);
+                handler.handleMessage(msg);
             }
 
             @Override
             public void onFailure(int err_code, String err_msg) {
                 Log.i("onFailure", "获取用户信息失败!");
+                Message msg = handler.obtainMessage(USER_INFO, null);
+                handler.handleMessage(msg);
             }
         });
-        return userInfo;
+    }
+
+    /**
+     * 获取当天运动数据
+     */
+    public void getTodayHealthData(){
+        manager.getHealthDataCurrentDay(DeviceType.HUAWEI_TALKBAND_B2,new IResultReportCallback(){
+            @Override
+            public void onSuccess(Object object) {
+                Log.i("onSucess", "获取当日数据成功!");
+                Message msg = handler.obtainMessage(TODAY_HEALTH, object);
+                handler.handleMessage(msg);
+            }
+
+            @Override
+            public void onFailure(int err_code, String err_msg) {
+                Log.i("onFailure", "获取当日数据失败!");
+                Message msg = handler.obtainMessage(TODAY_HEALTH, null);
+                handler.handleMessage(msg);
+            }
+        });
     }
 
     /**
@@ -91,17 +125,19 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             switch (status){
                 case 2://连接成功
                     deviceStatus=DeviceConnectionState.DEVICE_CONNECTED;
-                    setUserInfo(180,60,1);
-                    Log.i("connected",getUserInfo().getHeight()+"");
+                    Log.i("statusChanged","connected");
                     break;
                 case 3://连接失败
                     deviceStatus=DeviceConnectionState.DEVICE_CONNECT_FAILED;
+                    Log.i("statusChanged","failed");
                     break;
                 case 5://断开连接
                     deviceStatus=DeviceConnectionState.DEVICE_DISCONNECTED;
+                    Log.i("statusChanged","disConnected");
                     break;
                 default:
                     deviceStatus=DeviceConnectionState.DEVICE_UNKNOWN;
+                    Log.i("statusChanged","default");
                     break;
             }
         }
@@ -109,13 +145,15 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
 
 
     @Override
-    public void onActivityStart(Context context){
+    public void onActivityCreated(Context context){
         //获取HuaweiWearableManager单一实例
         manager = HuaweiWearableManager.getInstance(context);
         //设备连接状态回调类的实例
         deviceConnectStatusCallback = new MyDeviceConnectStatusCallback();
         //向manager注册设备连接状态回调类
         manager.registerConnectStateCallback(deviceConnectStatusCallback);
+        //获得HomeActivity的Handler
+        handler = ((HomeActivity)context).getHandler();
     }
 
 }

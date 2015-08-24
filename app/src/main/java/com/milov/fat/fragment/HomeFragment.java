@@ -14,12 +14,16 @@ import com.milov.fat.R;
  * Created by Milov on 2015/8/22.
  */
 public class HomeFragment extends Fragment implements OnClickListener {
-
+    public TextView deviceStatusText,stepsText,calText;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout,container,false);
         TextView personalView = (TextView) view.findViewById(R.id.personal_TextView);
         TextView missionView = (TextView) view.findViewById(R.id.mission_TextView);
+        deviceStatusText = (TextView) view.findViewById(R.id.test_device_state);
+        stepsText = (TextView) view.findViewById(R.id.test_steps);
+        calText = (TextView) view.findViewById(R.id.test_cal);
+
         personalView.setOnClickListener(this);
         missionView.setOnClickListener(this);
         return view;

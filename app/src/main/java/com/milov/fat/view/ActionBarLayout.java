@@ -56,7 +56,6 @@ public class ActionBarLayout extends ViewGroup {
         //部署控件
         //左边的图标
         getChildAt(0).layout(margin, margin, margin + square, margin + square);
-        Log.i("actionBar--layout", getChildAt(0).toString() + "-----"+BAR_HEIGHT+"|"+margin);
         //中间的文字
         getChildAt(1).layout(margin + square, margin, (int) SCREEN_WIDTH - margin - square,margin+square);
         //如果右边有图标，则部署
