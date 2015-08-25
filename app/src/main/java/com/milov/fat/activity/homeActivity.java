@@ -2,17 +2,18 @@ package com.milov.fat.activity;
 
 import android.app.Activity;
 
-
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.huawei.huaweiwearable.constant.DeviceConnectionState;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
 import com.huawei.huaweiwearable.data.DataTotalMotion;
 import com.milov.fat.R;
@@ -49,7 +50,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     /**
      * 用于响应HuaweiWearableHelper状态回调的Handler
      */
-    private static MyHandler handler;
+    public MyHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +73,25 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         if(huawei == null )
             huawei = new HuaweiWearableHelper();
         //向HuaweiWearableHelper类传递Context
-        huawei.onActivityCreated(this);
+        huawei.onActivityCreated(this, handler);
 
     }
 
     @Override
     public void onStart(){
         super.onStart();
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                homeFragment.deviceStatusText.setText(huawei.getDeviceStatus()+"");
+                homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
+                    showOpenApp(true);
+                    showTodayHealthData(false);
+                } else {
+                    showOpenApp(false);
+                    showTodayHealthData(true);
+                }
                 huawei.getTodayHealthData();
             }
         }, 500);
@@ -107,8 +116,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                     missionFragment = new MissionFragment();
                 }
                 fragmentTransaction.hide(homeFragment);
-                fragmentTransaction.add(R.id.home_content,missionFragment,null);
+                fragmentTransaction.add(R.id.home_content, missionFragment, null);
                 fragmentTransaction.addToBackStack(null);
+                break;
+            //打开华为穿戴APP
+            case R.id.openApp_button:
+                openApp();
                 break;
         }
         fragmentTransaction.commit();
@@ -144,49 +157,118 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     /**
      * 处理HuawerWearableHelper状态回调数据
      */
-    public class MyHandler extends Handler{
-        public MyHandler(){
+    public class MyHandler extends Handler {
+        public MyHandler() {
             super();
         }
 
         @Override
-        public void handleMessage(Message msg){
-            Object obj = msg.obj;
-            switch (msg.what){
-                case HuaweiWearableHelper.TODAY_HEALTH:
-                    int steps = 0,calorie = 0;
-                    if(obj!=null){
-                        calorie = ((DataTodayTotalMotion) obj).getTotalCalorie();
-                        List<DataTotalMotion> list = ((DataTodayTotalMotion) obj).getDataTotalMotions();
-                        for(DataTotalMotion motion:list){
-                            steps+=motion.getStep();
-                        }
+        public void handleMessage(Message message) {
+            final Message msg = message;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (msg.what) {
+                        case HuaweiWearableHelper.CONNECTION_STATUS:
+                            showChangedStatus(msg.obj);
+                            break;
+                        case HuaweiWearableHelper.TODAY_HEALTH:
+                            setTodayHealthData(msg.obj);
+                            break;
+                        case HuaweiWearableHelper.USER_INFO:
+                            break;
                     }
-                    final int innerCal = calorie;
-                    final int innerSteps = steps;
-                    //我也不知道这TM是什么鬼导致我的handler成了非主线程的了！！！
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            homeFragment.stepsText.setText(innerSteps +"");
-                            homeFragment.calText.setText(innerCal+"");
-                        }
-                    });
-                    break;
-
-                case HuaweiWearableHelper.USER_INFO:
-                    break;
-            }
+                }
+            });
         }
     }
 
-    public static Handler getHandler(){
-        return handler;
+    /**
+     * （handler内使用）获取DataTodayTotalMotion成功后调用
+     * @param obj 存储DataTodayTotalMotion
+     */
+    private void setTodayHealthData(Object obj){
+        int steps = 0, calorie = 0;
+        if (obj != null) {
+            calorie = ((DataTodayTotalMotion) obj).getTotalCalorie();
+            List<DataTotalMotion> list = ((DataTodayTotalMotion) obj).getDataTotalMotions();
+            for (DataTotalMotion motion : list) {
+                steps += motion.getStep();
+            }
+        }
+        //我也不知道这TM是什么鬼导致我的handler成了非主线程的了！！！
+        homeFragment.calText.setText(calorie + "");
+    }
+
+    /**
+     * （handler内使用）设备连接状态改变时调用
+     * @param obj 存储DeviceConnectionState
+     */
+    private void showChangedStatus(Object obj){
+        int status = (int) obj;
+        switch (status){
+            case DeviceConnectionState.DEVICE_CONNECTED:
+                homeFragment.deviceStatusText.setText("设备已连接");
+                huawei.getTodayHealthData();
+                break;
+            case DeviceConnectionState.DEVICE_CONNECT_FAILED:
+                homeFragment.deviceStatusText.setText("设备连接失败");
+                break;
+            case DeviceConnectionState.DEVICE_CONNECTING:
+                homeFragment.deviceStatusText.setText("正在连接");
+                break;
+            case DeviceConnectionState.DEVICE_DISCONNECTED:
+                homeFragment.deviceStatusText.setText("设备未连接");
+                break;
+            case DeviceConnectionState.DEVICE_DISCONNECTING:
+                homeFragment.deviceStatusText.setText("正在断开连接");
+                break;
+        }
+    }
+
+    /**
+     * 显示打开华为穿戴App的提示
+     */
+    private void showOpenApp(boolean gonnaShow){
+        if(gonnaShow){
+            homeFragment.openAppText.setVisibility(View.VISIBLE);
+            homeFragment.openAppButton.setVisibility(View.VISIBLE);
+        } else {
+            homeFragment.openAppText.setVisibility(View.GONE);
+            homeFragment.openAppButton.setVisibility(View.GONE);
+        }
     }
     /**
-     * 用于传递HomeActivity的Context的回调接口
+     * 显示主页运动数据
+     */
+    private void showTodayHealthData(boolean gonnaShow){
+        if(gonnaShow){
+            homeFragment.calText.setVisibility(View.VISIBLE);
+            homeFragment.unitText.setVisibility(View.VISIBLE);
+        } else {
+            homeFragment.calText.setVisibility(View.GONE);
+            homeFragment.unitText.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 打开华为穿戴APP
+     */
+    private void openApp(){
+        try {
+            PackageManager packageManager = getPackageManager();
+            Intent intent= new Intent();
+            intent = packageManager.getLaunchIntentForPackage("com.huawei.bone");
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"您还没有安装华为穿戴APP",Toast.LENGTH_SHORT).show();
+        }
+    }
+    /**
+     * 用于传递HomeActivity的Context和handler的回调接口
      */
     public interface ActivitiCallback{
-        void onActivityCreated(Context context);
+        void onActivityCreated(Context context,Handler handler);
     }
 }

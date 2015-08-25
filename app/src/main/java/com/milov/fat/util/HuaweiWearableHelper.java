@@ -35,6 +35,10 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      */
     Handler handler;
     /**
+     * 设备状态标识
+     */
+    public static final int CONNECTION_STATUS = 0;
+    /**
      * 得到的用户信息标识
      */
     public static final int USER_INFO = 1;
@@ -140,12 +144,14 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
                     Log.i("statusChanged","default");
                     break;
             }
+            Message msg = handler.obtainMessage(CONNECTION_STATUS, status);
+            handler.handleMessage(msg);
         }
     }
 
 
     @Override
-    public void onActivityCreated(Context context){
+    public void onActivityCreated(Context context,Handler handler){
         //获取HuaweiWearableManager单一实例
         manager = HuaweiWearableManager.getInstance(context);
         //设备连接状态回调类的实例
@@ -153,7 +159,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         //向manager注册设备连接状态回调类
         manager.registerConnectStateCallback(deviceConnectStatusCallback);
         //获得HomeActivity的Handler
-        handler = ((HomeActivity)context).getHandler();
+        this.handler = handler;
     }
 
 }
