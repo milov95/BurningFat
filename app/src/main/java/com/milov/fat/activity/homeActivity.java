@@ -86,13 +86,22 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             public void run() {
                 homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
                 if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
-                    showOpenApp(true);
-                    showTodayHealthData(false);
+                    if (huawei.getDeviceStatus() == DeviceConnectionState.DEVICE_CONNECT_FAILED) {
+                        showFailed(true);
+                        showOpenApp(false);
+                        showTodayHealthData(false);
+                    } else {
+                        showFailed(false);
+                        showOpenApp(true);
+                        showTodayHealthData(false);
+                    }
                 } else {
+                    showFailed(false);
                     showOpenApp(false);
                     showTodayHealthData(true);
+                    huawei.getTodayHealthData();
                 }
-                huawei.getTodayHealthData();
+
             }
         }, 500);
     }
@@ -165,6 +174,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         @Override
         public void handleMessage(Message message) {
             final Message msg = message;
+            //我也不知道这TM是什么鬼导致我的handler成了非主线程的了！！！
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -196,8 +206,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 steps += motion.getStep();
             }
         }
-        //我也不知道这TM是什么鬼导致我的handler成了非主线程的了！！！
-        homeFragment.calText.setText(calorie + "");
+        homeFragment.calStillText.setText(calorie + "");
+        homeFragment.stepText.setText(steps+"步");
+        homeFragment.calText.setText(calorie+"千卡");
     }
 
     /**
@@ -210,24 +221,47 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             case DeviceConnectionState.DEVICE_CONNECTED:
                 homeFragment.deviceStatusText.setText("设备已连接");
                 huawei.getTodayHealthData();
+                showFailed(false);
+                showOpenApp(false);
+                showTodayHealthData(true);
                 break;
             case DeviceConnectionState.DEVICE_CONNECT_FAILED:
                 homeFragment.deviceStatusText.setText("设备连接失败");
+                showFailed(true);
+                showOpenApp(false);
+                showTodayHealthData(false);
                 break;
             case DeviceConnectionState.DEVICE_CONNECTING:
                 homeFragment.deviceStatusText.setText("正在连接");
+                Toast.makeText(getApplicationContext(),"正在连接...",Toast.LENGTH_SHORT).show();
                 break;
             case DeviceConnectionState.DEVICE_DISCONNECTED:
                 homeFragment.deviceStatusText.setText("设备未连接");
+                showFailed(false);
+                showOpenApp(true);
+                showTodayHealthData(false);
                 break;
             case DeviceConnectionState.DEVICE_DISCONNECTING:
                 homeFragment.deviceStatusText.setText("正在断开连接");
+                Toast.makeText(getApplicationContext(), "正在断开连接...", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
     /**
+     * 显示连接失败的提示
+     * @param gonnaShow
+     */
+    private void showFailed(boolean gonnaShow){
+        if(gonnaShow){
+            homeFragment.failedText.setVisibility(View.VISIBLE);
+        } else {
+            homeFragment.failedText.setVisibility(View.GONE);
+        }
+    }
+    /**
      * 显示打开华为穿戴App的提示
+     * @param gonnaShow
      */
     private void showOpenApp(boolean gonnaShow){
         if(gonnaShow){
@@ -240,14 +274,17 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     }
     /**
      * 显示主页运动数据
+     * @param gonnaShow
      */
     private void showTodayHealthData(boolean gonnaShow){
         if(gonnaShow){
-            homeFragment.calText.setVisibility(View.VISIBLE);
+            homeFragment.calStillText.setVisibility(View.VISIBLE);
             homeFragment.unitText.setVisibility(View.VISIBLE);
+            homeFragment.manBar.setVisibility(View.VISIBLE);
         } else {
-            homeFragment.calText.setVisibility(View.GONE);
+            homeFragment.calStillText.setVisibility(View.GONE);
             homeFragment.unitText.setVisibility(View.GONE);
+            homeFragment.manBar.setVisibility(View.GONE);
         }
     }
 

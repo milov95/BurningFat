@@ -51,7 +51,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="bottom">
 
             <TextView
                 android:id="@+id/openApp_text"
@@ -63,14 +64,25 @@
                 android:textColor="@color/blue"
                 android:visibility="gone"/>
             <TextView
-                android:id="@+id/cal_text"
+                android:id="@+id/failed_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:gravity="center"
+                android:textSize="25dp"
+                android:text="连接失败，请重新连接"
+                android:textColor="@color/blue"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/cal_still_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="999"
                 android:textSize="100dp"
+                android:layout_marginBottom="-10dp"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
-                android:visibility="visible"/>
+                android:visibility="visible"
+                android:gravity="bottom"/>
             <TextView
                 android:id="@+id/unit_text"
                 android:layout_width="wrap_content"
@@ -79,11 +91,44 @@
                 android:text="千\n卡\n待\n耗"
                 android:textSize="15dp"
                 android:textColor="@color/blue"
+                android:layout_marginTop="15dp"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
                 android:visibility="visible"
                 />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal|bottom"
+            android:id="@+id/man_bar">
+            <TextView
+                android:id="@+id/step_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="步"
+                android:textSize="16dp"
+                android:textColor="@color/gray"
+                android:visibility="visible"
+                />
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/man"
+                android:visibility="visible"
+                />
+            <TextView
+                android:id="@+id/cal_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="千卡"
+                android:textSize="16dp"
+                android:textColor="@color/gray"
+                android:visibility="visible"
+                />
         </LinearLayout>
 
         <Button
