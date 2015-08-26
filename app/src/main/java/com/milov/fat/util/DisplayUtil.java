@@ -1,8 +1,13 @@
 package com.milov.fat.util;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import com.milov.fat.activity.HomeActivity;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by Milov on 2015/8/21.
@@ -22,17 +27,27 @@ public class DisplayUtil {
      */
     public static float SCREEN_HEIGHT;
     /**
+     * 状态栏高度
+     */
+    public static float statusBarHeight;
+    /**
      * 分辨率密度
      */
     private static float scale;
+    /**
+     * 上下文关系
+     */
+    private Context context;
 
     private DisplayUtil(Context context){
+        this.context=context;
         DisplayMetrics dpMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(dpMetrics);
         SCREEN_WIDTH = dpMetrics.widthPixels;
         SCREEN_HEIGHT = dpMetrics.heightPixels;
         scale = dpMetrics.density;
+        statusBarHeight = getStatusBarHeight();
     }
 
     /**
@@ -44,6 +59,15 @@ public class DisplayUtil {
         if(displayUtil==null)
             displayUtil = new DisplayUtil(context);
         return displayUtil;
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     /**
