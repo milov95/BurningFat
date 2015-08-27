@@ -31,6 +31,10 @@ public class DisplayUtil {
      */
     public static float statusBarHeight;
     /**
+     * 标题栏高度
+     */
+    public static float titleBarHeight;
+    /**
      * 分辨率密度
      */
     private static float scale;
@@ -48,6 +52,7 @@ public class DisplayUtil {
         SCREEN_HEIGHT = dpMetrics.heightPixels;
         scale = dpMetrics.density;
         statusBarHeight = getStatusBarHeight();
+        titleBarHeight = dp2px(52);
     }
 
     /**

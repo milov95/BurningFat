@@ -62,6 +62,9 @@ public class HomeCurveView extends View {
      */
     private float a,b;
     private float k;
+    private float sideLength;
+    private float bottom,top;
+    private float titleBarHeight;
 
     public HomeCurveView(Context context){
         this(context, null);
@@ -75,12 +78,15 @@ public class HomeCurveView extends View {
         displayUtil = DisplayUtil.getInstance(context);
         SCREEN_HEIGHT = displayUtil.SCREEN_HEIGHT;
         SCREEN_WIDTH = displayUtil.SCREEN_WIDTH;
-
+        titleBarHeight = displayUtil.titleBarHeight;
         value=-1;
         argb = 0xff00aaf9;
         r = displayUtil.dp2px(75/2);
         x = SCREEN_WIDTH/2;
         y = SCREEN_HEIGHT-displayUtil.dp2px(135)-displayUtil.statusBarHeight;
+        sideLength = (SCREEN_WIDTH-r)/2;
+        bottom = SCREEN_HEIGHT-y-r;
+        top = y-r-displayUtil.dp2px(52);
 
         //配置画笔
         curvePaint = new Paint();
@@ -108,6 +114,7 @@ public class HomeCurveView extends View {
     public void onDraw(Canvas canvas){
         if(curvePaint!=null)
             curvePaint.setColor(argb);
+
         if(value<=0){
             Path curvePath = new Path();
             float sideY = -value*2*SCREEN_HEIGHT/20+10*SCREEN_HEIGHT/20;
@@ -126,7 +133,7 @@ public class HomeCurveView extends View {
             buttonPath.addRoundRect(new RectF(x - r, y - r, x + r, y + r), r, r, Path.Direction.CCW);
             canvas.drawPath(buttonPath,buttonPaint);
 
-        } else {
+        } else if(value<=1){
             //画背景矩形
             canvas.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, curvePaint);
             //先是圆的底部高度不变，再后保持圆心高度不变
@@ -134,10 +141,16 @@ public class HomeCurveView extends View {
                 canvas.drawCircle(SCREEN_WIDTH/2,10*SCREEN_HEIGHT/20-(1-value)*999,(1-value)*999,circlePaint);
             else
                 canvas.drawCircle(SCREEN_WIDTH/2,10*SCREEN_HEIGHT/20-SCREEN_HEIGHT/5,(1-value)*999,circlePaint);
-            //画可以变形的按钮
-            //画可以变形的按钮
+            //画变形的按钮
             Path buttonPath = new Path();
-            buttonPath.addRoundRect(new RectF(x - r, y - r, x + r, y + r), r, r, Path.Direction.CCW);
+            buttonPath.addRoundRect(new RectF(x-r-value*sideLength, y-r, x+r+value*sideLength, y+r), (1-value)*r, (1-value)*r, Path.Direction.CCW);
+            canvas.drawPath(buttonPath,buttonPaint);
+        } else {
+            //画背景矩形
+            canvas.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, curvePaint);
+            //按钮变画布
+            Path buttonPath = new Path();
+            buttonPath.addRoundRect(new RectF(0, top*(2-value)+titleBarHeight, SCREEN_WIDTH, y+r+bottom*(value-1)), 0, 0, Path.Direction.CCW);
             canvas.drawPath(buttonPath,buttonPaint);
         }
     }

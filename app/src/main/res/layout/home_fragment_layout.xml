@@ -5,18 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.milov.fat.view.HomeCurveView
-        android:id="@+id/homeCurveView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
     <com.milov.fat.view.ActionBarLayout
         android:layout_width="match_parent"
         android:layout_height="52dp">
 
         <ImageView
-            android:id="@+id/share_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:src="@drawable/share"
@@ -37,6 +30,8 @@
             android:padding="10dp"/>
 
     </com.milov.fat.view.ActionBarLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -143,6 +138,12 @@
             />
     </LinearLayout>
 
+    <com.milov.fat.view.HomeCurveView
+        android:id="@+id/homeCurveView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -194,30 +195,189 @@
         android:textColor="@color/blue"
         android:visibility="visible"
         />
-
-    <TextView
-        android:id="@+id/personal_TextView"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:padding="15dp"
-        android:text="个人中心"
-        android:textSize="15dp"
-        android:textStyle="normal"
-        android:textColor="@color/light_blue"
+        android:id="@+id/home_bottom_layout">
+
+        <TextView
+            android:id="@+id/personal_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:padding="15dp"
+            android:text="个人中心"
+            android:textSize="15dp"
+            android:textStyle="normal"
+            android:textColor="@color/light_blue"
         />
 
-    <TextView
-        android:id="@+id/mission_TextView"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/mission_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:padding="15dp"
+            android:text="任务中心"
+            android:textSize="15dp"
+            android:textColor="@color/light_blue"
+            />
+        </RelativeLayout>
+
+    <com.milov.fat.view.ActionBarLayout
+        android:id="@+id/recipe_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="10dp"/>
+
+        <TextView
+            android:id="@+id/recipe_text"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="今日食谱"
+            android:textSize="19dp"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="10dp"/>
+
+    </com.milov.fat.view.ActionBarLayout>
+
+    <LinearLayout
+        android:id="@+id/breakfast_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:padding="15dp"
-        android:text="任务中心"
-        android:textSize="15dp"
-        android:textColor="@color/light_blue"
-        />
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_marginTopPercent="10%">
+        <LinearLayout
+            android:id="@+id/morning_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/morning"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingStart="10dp"
+                android:text="早餐"
+                android:textColor="@color/green"
+                android:textSize="25dp"
+                android:gravity="bottom"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/breakfast_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_gravity="start"
+            android:text="主食：火腿三明治\n佐餐：煮鸡蛋\n饮品：牛奶"
+            android:textColor="@color/gray"
+            android:textSize="15dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lunch_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_marginTopPercent="40%">
+        <LinearLayout
+            android:id="@+id/noon_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/noon"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingStart="10dp"
+                android:text="午餐"
+                android:textColor="@color/green"
+                android:textSize="25dp"
+                android:gravity="bottom"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/lunch_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_gravity="start"
+            android:text="现在还不到午餐时间哦，只有在充分了解了您午餐前的能量消耗情况后才能更好地给您推荐食谱"
+            android:textColor="@color/gray"
+            android:textSize="15dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/supper_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_marginTopPercent="70%">
+        <LinearLayout
+            android:id="@+id/afternoon_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/afternoon"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingStart="10dp"
+                android:text="晚餐"
+                android:textColor="@color/green"
+                android:textSize="25dp"
+                android:gravity="bottom" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/supper_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_gravity="start"
+            android:text="现在还不到晚餐时间哦，只有在充分了解了您午餐前的能量消耗情况后才能更好地给您推荐食谱"
+            android:textColor="@color/gray"
+            android:textSize="15dp"
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </android.support.percent.PercentRelativeLayout>

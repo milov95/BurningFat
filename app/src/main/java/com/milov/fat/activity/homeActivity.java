@@ -85,23 +85,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             @Override
             public void run() {
                 homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
-                if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
-                    if (huawei.getDeviceStatus() == DeviceConnectionState.DEVICE_CONNECT_FAILED) {
-                        showFailed(true);
-                        showOpenApp(false);
-                        showTodayHealthData(false);
-                    } else {
-                        showFailed(false);
-                        showOpenApp(true);
-                        showTodayHealthData(false);
-                    }
-                } else {
-                    showFailed(false);
-                    showOpenApp(false);
-                    showTodayHealthData(true);
-                    huawei.getTodayHealthData();
-                }
-
+                refresh();
             }
         }, 500);
     }
@@ -132,6 +116,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             case R.id.openApp_button:
                 openApp();
                 break;
+            //刷新
+            case R.id.refresh_image:
+                if(huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED){
+                    Toast.makeText(getApplicationContext(),"设备连接失败",Toast.LENGTH_SHORT).show();
+                }
+                refresh();
         }
         fragmentTransaction.commit();
 
@@ -209,6 +199,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         homeFragment.calStillText.setText(calorie + "");
         homeFragment.stepText.setText(steps+"步");
         homeFragment.calText.setText(calorie+"千卡");
+        Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -300,6 +291,27 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(),"您还没有安装华为穿戴APP",Toast.LENGTH_SHORT).show();
+        }
+    }
+    /**
+     * 刷新
+     */
+    public void refresh(){
+        if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
+            if (huawei.getDeviceStatus() == DeviceConnectionState.DEVICE_CONNECT_FAILED) {
+                showFailed(true);
+                showOpenApp(false);
+                showTodayHealthData(false);
+            } else {
+                showFailed(false);
+                showOpenApp(true);
+                showTodayHealthData(false);
+            }
+        } else {
+            showFailed(false);
+            showOpenApp(false);
+            showTodayHealthData(true);
+            huawei.getTodayHealthData();
         }
     }
     /**

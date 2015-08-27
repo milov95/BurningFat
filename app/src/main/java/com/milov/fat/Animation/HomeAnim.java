@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 
 import com.milov.fat.view.HomeCurveView;
 
@@ -36,11 +37,11 @@ public class HomeAnim {
     /**
      * 颜色由蓝变绿
      */
-    public ValueAnimator blue2greenAnim;
+    private ValueAnimator blue2greenAnim;
     /**
      * 颜色由绿变蓝
      */
-    public ValueAnimator green2blueAnim;
+    private ValueAnimator green2blueAnim;
     /**
      * 用于应用缩放动画的View
      */
@@ -65,6 +66,7 @@ public class HomeAnim {
             Float value = Float.parseFloat(animator.getAnimatedValue().toString());
             scaleView.setScaleX(value);
             scaleView.setScaleY(value);
+            ((TextView)scaleView).getTextColors().withAlpha((int)(2*(value-0.5)*255));
         }
     }
     /**
@@ -115,8 +117,13 @@ public class HomeAnim {
 
         blue2greenAnim = ValueAnimator.ofObject(new ArgbEvaluator(), 0xff00aaf9, 0xff4d8801);
         blue2greenAnim.setInterpolator(new LinearInterpolator());
-        blue2greenAnim.setDuration(1000);
+        blue2greenAnim.setDuration(700);
         blue2greenAnim.addUpdateListener(new ColorAnimUpdateListener());
+
+        green2blueAnim = ValueAnimator.ofObject(new ArgbEvaluator(), 0xff4d8801, 0xff00aaf9);
+        green2blueAnim.setInterpolator(new LinearInterpolator());
+        green2blueAnim.setDuration(700);
+        green2blueAnim.addUpdateListener(new ColorAnimUpdateListener());
 
     }
 
@@ -126,8 +133,11 @@ public class HomeAnim {
     public void startCurveAnim1(boolean gonnaStraighten){
         if(gonnaStraighten)
             curveStraightenAnim.start();
-        else
+        else{
             curveBentAnim.start();
+            scaleView.setVisibility(View.VISIBLE);
+            startCircleAnim(true);
+        }
     }
     /**
      * 启动曲线动画2
@@ -144,14 +154,21 @@ public class HomeAnim {
                 }
             }
         }).start();
-        blue2greenAnim.start();
+        if(fill) blue2greenAnim.start();
+        else {
+            while (blue2greenAnim.isRunning()) ;
+            CurveOpenTask openTask = new CurveOpenTask();
+            openTask.execute(1l);
+            green2blueAnim.start();
+        }
     }
     /**
      * 启动缩放动画
      */
     public void startCircleAnim(boolean gonnaLargen){
-        if(gonnaLargen)
+        if(gonnaLargen){
             enlargeAnim.start();
+        }
         else
             reduceAnim.start();
     }
@@ -163,12 +180,13 @@ public class HomeAnim {
         @Override
         protected Float doInBackground(Long... params) {
             float i = 0;
-            while( i < 1 ){
+            while( i < 2 ){
                 if(i<0.5) i+=0.01;
                 else if(i<0.6) i+=0.01;
                 else if(i<0.7) i+=0.006;
                 else if(i<0.8) i+=0.0040;
-                else i+=0.002;
+                else if(i<1) i+=0.002;
+                else i+=0.007;
                 publishProgress(i);
                 try{
                     Thread.sleep(params[0]);
@@ -176,16 +194,54 @@ public class HomeAnim {
                     e.printStackTrace();
                 }
             }
-            return 1f;
+            return 2f;
         }
+
         @Override
         protected void onProgressUpdate(Float... progress) {
-            ((HomeCurveView) curveView).setValue(progress[0]);
+            ((HomeCurveView) curveView).applyChange(progress[0]);
         }
         @Override
         protected void onPostExecute(Float result) {
             super.onPostExecute(result);
             ((HomeCurveView) curveView).setValue(result);
+        }
+    }
+
+    /**
+     * param 为long型的刷新间隔的时长
+     */
+    private class CurveOpenTask extends AsyncTask<Long,Float,Float>{
+        @Override
+        protected Float doInBackground(Long... params) {
+            float i = 2;
+            while( i >0 ){
+                if(i>1) i-=0.007;
+                else if(i>0.8) i-=0.002;
+                else if(i>0.7) i-=0.004;
+                else if(i>0.6) i-=0.006;
+                else if(i>0.5) i-=0.01;
+                else i-=0.01;
+
+                publishProgress(i);
+                try{
+                    Thread.sleep(params[0]);
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+            return 0f;
+        }
+
+        @Override
+        protected void onProgressUpdate(Float... progress) {
+            ((HomeCurveView) curveView).applyChange(progress[0]);
+        }
+        @Override
+        protected void onPostExecute(Float result) {
+            super.onPostExecute(result);
+            ((HomeCurveView) curveView).setValue(result);
+            startCurveAnim1(false);
         }
     }
 
