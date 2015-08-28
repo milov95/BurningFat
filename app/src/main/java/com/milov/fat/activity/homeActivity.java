@@ -173,7 +173,17 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                             showChangedStatus(msg.obj);
                             break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
-                            setTodayHealthData(msg.obj);
+                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取数据失败",Toast.LENGTH_SHORT).show();
+                            else{
+                                setTodayHealthData(msg.obj);
+                                Toast.makeText(getApplicationContext(),"获取数据成功",Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case HuaweiWearableHelper.TIME_HEALTH:
+                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取数据失败",Toast.LENGTH_SHORT).show();
+                            else{
+                                cacheTimeHealth(msg.arg1, msg.obj);
+                            }
                             break;
                         case HuaweiWearableHelper.USER_INFO:
                             break;
@@ -200,6 +210,14 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         homeFragment.stepText.setText(steps+"步");
         homeFragment.calText.setText(calorie+"千卡");
         Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * （handler内使用）获取DataHealthData成功后调用
+     * @param obj 存储DataHealthData
+     */
+    private void cacheTimeHealth(int index,Object obj){
+
     }
 
     /**

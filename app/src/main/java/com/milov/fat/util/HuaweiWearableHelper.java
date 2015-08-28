@@ -3,6 +3,7 @@ package com.milov.fat.util;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.test.InstrumentationTestSuite;
 import android.util.Log;
 import com.huawei.huaweiwearable.callback.IDeviceConnectStatusCallback;
 import com.huawei.huaweiwearable.callback.IResultReportCallback;
@@ -12,6 +13,13 @@ import com.huawei.huaweiwearable.data.DataUserInfo;
 import com.huawei.huaweiwearableApi.HuaweiWearableManager;
 import com.milov.fat.activity.HomeActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Objects;
 
 
 /**
@@ -33,7 +41,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
     /**
      * 与HomeActivity通信的handler
      */
-    Handler handler;
+    public Handler handler;
     /**
      * 设备状态标识
      */
@@ -46,13 +54,16 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      * 得到的步数标识
      */
     public static final int TODAY_HEALTH = 2;
-
+    /**
+     * 得到的时间段健康数据
+     */
+    public static final int TIME_HEALTH = 3;
     /**
      * 获取设备连接状态
      */
     public int getDeviceStatus(){
         deviceStatus=manager.getConnectStatus(DeviceType.HUAWEI_TALKBAND_B2);
-        Log.i("获取设备状态","状态为 "+deviceStatus);
+        Log.i("获取设备状态", "状态为 " + deviceStatus);
         return deviceStatus;
     }
 
@@ -103,7 +114,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      * 获取当天运动数据
      */
     public void getTodayHealthData(){
-        manager.getHealthDataCurrentDay(DeviceType.HUAWEI_TALKBAND_B2,new IResultReportCallback(){
+        manager.getHealthDataCurrentDay(DeviceType.HUAWEI_TALKBAND_B2, new IResultReportCallback() {
             @Override
             public void onSuccess(Object object) {
                 Log.i("onSucess", "获取当日数据成功!");
@@ -118,6 +129,49 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
                 handler.handleMessage(msg);
             }
         });
+    }
+
+
+    /**
+     * 获取上个月同一天开始的DataHealthData数组，共30个数据
+     */
+    public void getMonthHealthData(){
+        ArrayList<String> list = getMonthEachDayTime();
+        for(int i = 0;i<30;i++){
+            final int j = i;
+            manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
+                @Override
+                public void onSuccess(Object object) {
+                    Log.i("onSucess", "获取指定时间段数据成功!");
+                    HashMap<String,Object>  map = new HashMap<String,Object>();
+                    map.put("cal",object);
+                    handler.obtainMessage(TIME_HEALTH,j,0,map);
+                }
+
+                @Override
+                public void onFailure(int err_code, String err_msg) {
+                    Log.i("onFailure", "获取指定时间段数据失败!");
+                }
+
+            });
+        }
+    }
+
+    /**
+     * 获取上个月每天零点的时间，长度为31，用来获取30组DataHealthData数据，其中第0位为今天凌晨的时间，
+     */
+    private ArrayList<String> getMonthEachDayTime(){
+        ArrayList <String> list= new ArrayList<String>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd000000");
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+
+        for(int i = 30 ; i >= 0 ; i-- ){
+            String time = format.format(c.getTime());
+            list.add(time);
+            c.add(Calendar.DAY_OF_MONTH, -1);
+        }
+        return list;
     }
 
     /**
@@ -148,7 +202,6 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             handler.handleMessage(msg);
         }
     }
-
 
     @Override
     public void onActivityCreated(Context context,Handler handler){
