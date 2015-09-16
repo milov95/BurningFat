@@ -35,9 +35,10 @@
 
     </com.milov.fat.view.ActionBarLayout>
     
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:background="@color/red"
         app:layout_heightPercent="50%"
@@ -52,6 +53,21 @@
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"/>
 
-    </RelativeLayout>
+        <HorizontalScrollView
+            android:id="@+id/lineChartScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            >
+
+            <com.milov.fat.view.LineChartView
+                android:id="@+id/lineChartView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
 
 </android.support.percent.PercentRelativeLayout>

@@ -1,6 +1,8 @@
 package com.milov.fat.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.test.InstrumentationTestSuite;
@@ -9,6 +11,8 @@ import com.huawei.huaweiwearable.callback.IDeviceConnectStatusCallback;
 import com.huawei.huaweiwearable.callback.IResultReportCallback;
 import com.huawei.huaweiwearable.constant.DeviceConnectionState;
 import com.huawei.huaweiwearable.constant.DeviceType;
+import com.huawei.huaweiwearable.data.DataHealthData;
+import com.huawei.huaweiwearable.data.DataRawSportData;
 import com.huawei.huaweiwearable.data.DataUserInfo;
 import com.huawei.huaweiwearableApi.HuaweiWearableManager;
 import com.milov.fat.activity.HomeActivity;
@@ -58,6 +62,18 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      * 得到的时间段健康数据
      */
     public static final int TIME_HEALTH = 3;
+    /**
+     * 是否在读取月数据，用于控制manager在读取成功一个之后再读取下一个
+     */
+    public boolean gettingTimeHealth = false;
+    /**
+     * SharedPreference保存月健康数据
+     */
+    private SharedPreferences sp;
+    /**
+     * SharedPreferences.Editor
+     */
+    private SharedPreferences.Editor editor;
     /**
      * 获取设备连接状态
      */
@@ -131,29 +147,45 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         });
     }
 
-
     /**
      * 获取上个月同一天开始的DataHealthData数组，共30个数据
      */
     public void getMonthHealthData(){
         ArrayList<String> list = getMonthEachDayTime();
         for(int i = 0;i<30;i++){
+            Log.i("get",i+"");
             final int j = i;
+            final String date = list.get(i+1);
+            while (gettingTimeHealth);
+            if(sp.getInt(date,-1)!=-1){
+                handler.obtainMessage(TIME_HEALTH,j,1,sp.getInt(date,-1));
+                Log.i("onSucess", "获取指定时间段数据成功:" + sp.getInt(date,-1) );
+                continue;
+            }
             manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
                 @Override
                 public void onSuccess(Object object) {
-                    Log.i("onSucess", "获取指定时间段数据成功!");
-                    HashMap<String,Object>  map = new HashMap<String,Object>();
-                    map.put("cal",object);
-                    handler.obtainMessage(TIME_HEALTH,j,0,map);
+                    DataHealthData data = (DataHealthData) object;
+                    ArrayList<DataRawSportData> dataList = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
+                    int cal = 0;
+                    for(DataRawSportData sportData : dataList){
+                        cal+=sportData.getTotalCalorie();
+                    }
+                    editor.putInt(date, cal);
+                    editor.commit();
+                    handler.obtainMessage(TIME_HEALTH,j,0,cal);
+                    Log.i("onSucess", "获取指定时间段数据成功:" + cal);
+                    gettingTimeHealth = false;
                 }
 
                 @Override
                 public void onFailure(int err_code, String err_msg) {
                     Log.i("onFailure", "获取指定时间段数据失败!");
+                    gettingTimeHealth = false;
                 }
 
             });
+            gettingTimeHealth = true;
         }
     }
 
@@ -168,6 +200,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
 
         for(int i = 30 ; i >= 0 ; i-- ){
             String time = format.format(c.getTime());
+            Log.i("获取的日期",time);
             list.add(time);
             c.add(Calendar.DAY_OF_MONTH, -1);
         }
@@ -213,6 +246,8 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         manager.registerConnectStateCallback(deviceConnectStatusCallback);
         //获得HomeActivity的Handler
         this.handler = handler;
+        sp = context.getSharedPreferences("monthData", Activity.MODE_PRIVATE);
+        editor = sp.edit();
     }
 
 }

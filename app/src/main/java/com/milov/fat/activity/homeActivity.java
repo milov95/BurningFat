@@ -10,10 +10,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.huawei.huaweiwearable.constant.DeviceConnectionState;
+import com.huawei.huaweiwearable.data.DataHealthData;
+import com.huawei.huaweiwearable.data.DataRawSportData;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
 import com.huawei.huaweiwearable.data.DataTotalMotion;
 import com.milov.fat.R;
@@ -21,8 +24,13 @@ import com.milov.fat.fragment.HomeFragment;
 import com.milov.fat.fragment.MissionFragment;
 import com.milov.fat.fragment.PersonalFragment;
 import com.milov.fat.util.HuaweiWearableHelper;
+import com.milov.fat.view.LineChartView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
+import java.util.zip.Inflater;
 
 public class HomeActivity extends Activity implements HomeFragment.HomeFragClickListener,
         PersonalFragment.PersonFragClickListener,MissionFragment.MissionFragClickListener{
@@ -51,6 +59,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 用于响应HuaweiWearableHelper状态回调的Handler
      */
     public MyHandler handler;
+    /**
+     * 折线图
+     */
+    private LineChartView lChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +71,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
 
         handler = new MyHandler();
 
+        //实例化HuaweiWearleHelper工具类
+        if(huawei == null )
+            huawei = new HuaweiWearableHelper();
+        //向HuaweiWearableHelper类传递Context
+        huawei.onActivityCreated(this, handler);
+
         //加载HomeFragment
         //Activity在旋屏或从后台切回时有时会重新启动，这时原有的Fragment也会重启，同时又会执行一遍onCreat
         //原来的Fragment会存储在savedInstanceState里，为了避免过多的Fragment产生，这里执行一次判断
@@ -66,14 +84,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             homeFragment = new HomeFragment();
             fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.home_content,homeFragment,null);
+            fragmentTransaction.add(R.id.home_content, homeFragment, null);
             fragmentTransaction.commit();
+
         }
-        //实例化HuaweiWearleHelper工具类
-        if(huawei == null )
-            huawei = new HuaweiWearableHelper();
-        //向HuaweiWearableHelper类传递Context
-        huawei.onActivityCreated(this, handler);
 
     }
 
@@ -173,16 +187,25 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                             showChangedStatus(msg.obj);
                             break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
-                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取数据失败",Toast.LENGTH_SHORT).show();
+                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取日数据失败",Toast.LENGTH_SHORT).show();
                             else{
                                 setTodayHealthData(msg.obj);
-                                Toast.makeText(getApplicationContext(),"获取数据成功",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),"获取日数据成功",Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case HuaweiWearableHelper.TIME_HEALTH:
-                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取数据失败",Toast.LENGTH_SHORT).show();
+                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取月数据失败",Toast.LENGTH_SHORT).show();
                             else{
-                                cacheTimeHealth(msg.arg1, msg.obj);
+                                if(msg.arg2==1){
+                                    //读取存储的健康数据
+                                    Log.i("msg.obj","读取存储的数据");
+                                    lChart.drawHealthData(msg.arg1,(int)msg.obj);
+                                }
+                                else {
+                                    //读取设备的健康数据
+                                    Log.i("msg.obj","读取设备的数据");
+                                    lChart.drawHealthData(msg.arg1,(int)msg.obj);
+                                }
                             }
                             break;
                         case HuaweiWearableHelper.USER_INFO:
@@ -207,18 +230,38 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             }
         }
         homeFragment.calStillText.setText(calorie + "");
-        homeFragment.stepText.setText(steps+"步");
-        homeFragment.calText.setText(calorie+"千卡");
+        homeFragment.stepText.setText(steps + "步");
+        homeFragment.calText.setText(calorie + "千卡");
         Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * （handler内使用）获取DataHealthData成功后调用
-     * @param obj 存储DataHealthData
-     */
-    private void cacheTimeHealth(int index,Object obj){
-
-    }
+//    /**
+//     * （handler内使用）获取DataHealthData成功后调用
+//     * @param obj 存储DataHealthData
+//     */
+//    private void cacheTimeHealth(int index,Object obj){
+//        DataHealthData data = (DataHealthData) obj;
+//        ArrayList<DataRawSportData> list = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
+//        int cal = 0;
+//        for(DataRawSportData sportData : list){
+//            cal+=sportData.getTotalCalorie();
+//        }
+//        HashMap<String,Integer> map = new HashMap<String,Integer>();
+//        map.put("index",index);
+//        map.put("cal",cal);
+//        if(timeHealthList.size()==30){
+//            timeHealthList.clear();
+//        }
+//        timeHealthList.add(map);
+//        for(HashMap<String,Integer> Map:timeHealthList){
+//            Log.i("序号为"+ Map.get(index)+"的卡路里消耗总值",Map.get("cal")+"cal");
+//        }
+//        Log.i("序号为"+ index,obj+"");
+//        if(timeHealthList.size()==30){
+//            //加载完毕，绘制主页视图
+//
+//        }
+//    }
 
     /**
      * （handler内使用）设备连接状态改变时调用
@@ -330,7 +373,20 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             showOpenApp(false);
             showTodayHealthData(true);
             huawei.getTodayHealthData();
+            loadLineChart();
         }
+    }
+    /**
+     * 配置PersonFragment里的折线图
+     */
+    private void loadLineChart(){
+        lChart = (LineChartView) findViewById(R.id.lineChartView);
+        new Thread(){
+            @Override
+            public void run(){
+                huawei.getMonthHealthData();
+            }
+        }.start();
     }
     /**
      * 用于传递HomeActivity的Context和handler的回调接口
