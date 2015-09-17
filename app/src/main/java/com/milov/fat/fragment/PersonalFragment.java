@@ -11,6 +11,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 
 import com.milov.fat.R;
+import com.milov.fat.view.LineChartView;
 
 
 /**
@@ -19,6 +20,7 @@ import com.milov.fat.R;
 public class PersonalFragment extends Fragment implements OnClickListener{
 
     private HorizontalScrollView scrollView;
+    public LineChartView chartView;
 
     public PersonalFragment(){
     }
@@ -27,6 +29,8 @@ public class PersonalFragment extends Fragment implements OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.personal_fragment_layout,container,false);
         scrollView = (HorizontalScrollView) view.findViewById(R.id.lineChartScrollView);
+        chartView = (LineChartView) view.findViewById(R.id.lineChartView);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

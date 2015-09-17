@@ -59,10 +59,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 用于响应HuaweiWearableHelper状态回调的Handler
      */
     public MyHandler handler;
-    /**
-     * 折线图
-     */
-    private LineChartView lChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +112,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 fragmentTransaction.hide(homeFragment);
                 fragmentTransaction.add(R.id.home_content,personalFragment,null);
                 fragmentTransaction.addToBackStack(null);
+                loadLineChart();
                 break;
             //打开MissionFragment并加入回退栈
             case R.id.mission_TextView:
@@ -187,10 +184,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                             showChangedStatus(msg.obj);
                             break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
-                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取日数据失败",Toast.LENGTH_SHORT).show();
+                            if(msg.obj==null) /*失败*/ ;
                             else{
                                 setTodayHealthData(msg.obj);
-                                Toast.makeText(getApplicationContext(),"获取日数据成功",Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case HuaweiWearableHelper.TIME_HEALTH:
@@ -199,12 +195,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                 if(msg.arg2==1){
                                     //读取存储的健康数据
                                     Log.i("msg.obj","读取存储的数据");
-                                    lChart.drawHealthData(msg.arg1,(int)msg.obj);
+                                    personalFragment.chartView.drawHealthData(msg.arg1,(int)msg.obj);
                                 }
                                 else {
                                     //读取设备的健康数据
                                     Log.i("msg.obj","读取设备的数据");
-                                    lChart.drawHealthData(msg.arg1,(int)msg.obj);
+                                    personalFragment.chartView.drawHealthData(msg.arg1, (int) msg.obj);
                                 }
                             }
                             break;
@@ -373,14 +369,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             showOpenApp(false);
             showTodayHealthData(true);
             huawei.getTodayHealthData();
-            loadLineChart();
         }
     }
     /**
      * 配置PersonFragment里的折线图
      */
     private void loadLineChart(){
-        lChart = (LineChartView) findViewById(R.id.lineChartView);
         new Thread(){
             @Override
             public void run(){

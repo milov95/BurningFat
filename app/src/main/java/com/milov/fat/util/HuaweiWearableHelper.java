@@ -158,22 +158,26 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             final String date = list.get(i+1);
             while (gettingTimeHealth);
             if(sp.getInt(date,-1)!=-1){
-                handler.obtainMessage(TIME_HEALTH,j,1,sp.getInt(date,-1));
+                Message msg = handler.obtainMessage(TIME_HEALTH, j, 1, sp.getInt(date, -1));
+                handler.handleMessage(msg);
                 Log.i("onSucess", "获取指定时间段数据成功:" + sp.getInt(date,-1) );
                 continue;
             }
             manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
                 @Override
                 public void onSuccess(Object object) {
+                    //得到数据
                     DataHealthData data = (DataHealthData) object;
                     ArrayList<DataRawSportData> dataList = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
                     int cal = 0;
-                    for(DataRawSportData sportData : dataList){
-                        cal+=sportData.getTotalCalorie();
-                    }
+                    if(dataList.size()!=0)
+                        cal = dataList.get(dataList.size()-1).getTotalCalorie();
+                    //存储数据到SharedPreference
                     editor.putInt(date, cal);
                     editor.commit();
-                    handler.obtainMessage(TIME_HEALTH,j,0,cal);
+
+                    Message msg = handler.obtainMessage(TIME_HEALTH, j, 0, cal);
+                    handler.handleMessage(msg);
                     Log.i("onSucess", "获取指定时间段数据成功:" + cal);
                     gettingTimeHealth = false;
                 }
