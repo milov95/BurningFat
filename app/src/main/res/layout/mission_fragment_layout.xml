@@ -7,9 +7,11 @@
 
 
     <com.milov.fat.view.ActionBarLayout
+        android:id="@+id/mission_actionBar"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:background="@color/red">
+        android:background="@color/red"
+        >
 
         <ImageView
             android:id="@+id/back_mission_image"
@@ -28,6 +30,126 @@
             android:padding="10dp"/>
 
     </com.milov.fat.view.ActionBarLayout>
+
+    <RelativeLayout
+        android:id="@+id/mission_info"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_below="@id/mission_actionBar"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:paddingStart="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="任务目标"
+                android:textSize="20dp"
+                android:paddingTop="25dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="任务周期"
+                android:textSize="20dp"
+                android:paddingBottom="30dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="完成天数"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="达标天数"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="达标率"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:paddingBottom="25dp"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|end"
+            android:paddingEnd="15dp">
+
+            <TextView
+                android:id="@+id/mission_goal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:paddingTop="15dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/mission_period"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:paddingBottom="30dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/mission_completeDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/mission_reachDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/mission_reachRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:paddingBottom="15dp"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mission_info"
+        android:gravity="center"
+        android:textSize="17dp"
+        android:text="根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗值为xxx千卡"
+        />
 
     <RelativeLayout
         android:layout_width="0dp"

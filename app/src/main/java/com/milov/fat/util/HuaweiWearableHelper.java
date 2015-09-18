@@ -33,7 +33,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
     /**
      * 用于获取所有可穿戴数据
      */
-    private HuaweiWearableManager manager;
+    public HuaweiWearableManager manager;
     /**
      * 设备连接状态的回调
      */
@@ -156,7 +156,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             Log.i("get",i+"");
             final int j = i;
             final String date = list.get(i+1);
-            while (gettingTimeHealth);
+            while (gettingTimeHealth) Log.i("getting","getting");
             if(sp.getInt(date,-1)!=-1){
                 Message msg = handler.obtainMessage(TIME_HEALTH, j, 1, sp.getInt(date, -1));
                 handler.handleMessage(msg);
@@ -241,17 +241,19 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
     }
 
     @Override
-    public void onActivityCreated(Context context,Handler handler){
+    public void onActivityStarted(Context context, Handler handler){
         //获取HuaweiWearableManager单一实例
         manager = HuaweiWearableManager.getInstance(context);
-        //设备连接状态回调类的实例
-        deviceConnectStatusCallback = new MyDeviceConnectStatusCallback();
-        //向manager注册设备连接状态回调类
-        manager.registerConnectStateCallback(deviceConnectStatusCallback);
-        //获得HomeActivity的Handler
-        this.handler = handler;
-        sp = context.getSharedPreferences("monthData", Activity.MODE_PRIVATE);
-        editor = sp.edit();
+        if(manager!=null) {
+            //设备连接状态回调类的实例
+            deviceConnectStatusCallback = new MyDeviceConnectStatusCallback();
+            //向manager注册设备连接状态回调类
+            manager.registerConnectStateCallback(deviceConnectStatusCallback);
+            //获得HomeActivity的Handler
+            this.handler = handler;
+            sp = context.getSharedPreferences("monthData", Activity.MODE_PRIVATE);
+            editor = sp.edit();
+        }
     }
 
 }

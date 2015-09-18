@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.huawei.huaweiwearable.constant.DeviceConnectionState;
-import com.huawei.huaweiwearable.data.DataHealthData;
-import com.huawei.huaweiwearable.data.DataRawSportData;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
 import com.huawei.huaweiwearable.data.DataTotalMotion;
 import com.milov.fat.R;
@@ -24,13 +22,8 @@ import com.milov.fat.fragment.HomeFragment;
 import com.milov.fat.fragment.MissionFragment;
 import com.milov.fat.fragment.PersonalFragment;
 import com.milov.fat.util.HuaweiWearableHelper;
-import com.milov.fat.view.LineChartView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
-import java.util.zip.Inflater;
 
 public class HomeActivity extends Activity implements HomeFragment.HomeFragClickListener,
         PersonalFragment.PersonFragClickListener,MissionFragment.MissionFragClickListener{
@@ -70,8 +63,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         //实例化HuaweiWearleHelper工具类
         if(huawei == null )
             huawei = new HuaweiWearableHelper();
-        //向HuaweiWearableHelper类传递Context
-        huawei.onActivityCreated(this, handler);
 
         //加载HomeFragment
         //Activity在旋屏或从后台切回时有时会重新启动，这时原有的Fragment也会重启，同时又会执行一遍onCreat
@@ -94,10 +85,13 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                if(huawei.manager!=null) homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
                 refresh();
             }
         }, 500);
+
+        //向HuaweiWearableHelper类传递Context
+        huawei.onActivityStarted(this, handler);
     }
 
     @Override
@@ -106,6 +100,11 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         switch (view.getId()){
             //打开PersonalFragment并加入回退栈
             case R.id.personal_TextView:
+                //判断手环是否正常连接
+                if (huawei.manager==null || huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED){
+                    Toast.makeText(this,"请确保手环正常连接",Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 if(personalFragment == null){
                     personalFragment = new PersonalFragment();
                 }
@@ -116,6 +115,11 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 break;
             //打开MissionFragment并加入回退栈
             case R.id.mission_TextView:
+                //判断手环是否正常连接
+                if (huawei.manager==null || huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED){
+                    Toast.makeText(this,"请确保手环正常连接",Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 if(missionFragment == null){
                     missionFragment = new MissionFragment();
                 }
@@ -125,6 +129,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 break;
             //打开华为穿戴APP
             case R.id.openApp_button:
+                if(huawei.manager==null){
+                    huawei.onActivityStarted(this,handler);
+                    break;
+                }
                 openApp();
                 break;
             //刷新
@@ -354,7 +362,11 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 刷新
      */
     public void refresh(){
-        if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
+        if(huawei.manager==null){
+            showFailed(false);
+            showOpenApp(true);
+            showTodayHealthData(false);
+        } else if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
             if (huawei.getDeviceStatus() == DeviceConnectionState.DEVICE_CONNECT_FAILED) {
                 showFailed(true);
                 showOpenApp(false);
@@ -386,6 +398,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 用于传递HomeActivity的Context和handler的回调接口
      */
     public interface ActivitiCallback{
-        void onActivityCreated(Context context,Handler handler);
+        void onActivityStarted(Context context, Handler handler);
     }
 }

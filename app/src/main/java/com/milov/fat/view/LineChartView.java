@@ -108,8 +108,7 @@ public class LineChartView extends View {
             String date = dataList.get(i).get("date")+"";
             if(date.equals("1")){
                 c.setTime(new Date());
-                c.add(Calendar.MONTH,0);
-                date = c.get(Calendar.MONTH)+"月1";
+                date = c.get(Calendar.MONTH)+1+"月1";
             }
             canvas.drawText( date,(29-i)*space+20,baseHeight+20,textPaint);
         }
@@ -129,7 +128,8 @@ public class LineChartView extends View {
         strokePath.lineTo(20,baseHeight);
         canvas.drawPath(path, fillPaint);
         //文字绘制在最上层
-        canvas.drawPath(path,linePaint); for(int i=0;i<30;i++){
+        canvas.drawPath(path,linePaint);
+        for(int i=0;i<30;i++){
             int cal = dataList.get(i).get("data");
             if(cal!=0){
                 canvas.drawText(dataList.get(i).get("data")/1000+"",(29-i)*space+20,baseHeight-(dataList.get(i).get("data")*unitHeight)-13,textStrokePaint);

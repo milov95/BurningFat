@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
     
     <com.milov.fat.view.ActionBarLayout
+        android:id="@+id/personal_actionBar"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:background="@color/red">
@@ -30,11 +31,118 @@
             android:id="@+id/setting_personal_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/setting"
             android:padding="10dp"/>
 
     </com.milov.fat.view.ActionBarLayout>
-    
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="205dp"
+        android:layout_below="@id/personal_actionBar"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:paddingStart="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="身高"
+                android:textSize="20dp"
+                android:paddingTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="体重"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="体型"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="日均卡路里消耗"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="身体素质评估"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:paddingBottom="20dp"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|end"
+            android:paddingEnd="15dp">
+
+            <TextView
+                android:id="@+id/person_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:paddingTop="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/person_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/person_shape"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/average_cal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:id="@+id/person_assess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:paddingBottom="20dp"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

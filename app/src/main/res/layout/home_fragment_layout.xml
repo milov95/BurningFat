@@ -51,8 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="25dp"
-                android:text="请先打开华为穿戴APP\n并确保设备连接"
+                android:textSize="24dp"
+                android:text="请先打开华为穿戴APP\n并确保B2手环正常连接"
                 android:textColor="@color/blue"
                 android:visibility="gone"/>
             <TextView

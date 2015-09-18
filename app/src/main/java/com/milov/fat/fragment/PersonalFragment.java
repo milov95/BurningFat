@@ -28,6 +28,8 @@ public class PersonalFragment extends Fragment implements OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.personal_fragment_layout,container,false);
+        ImageView back = (ImageView) view.findViewById(R.id.back_personal_image);
+
         scrollView = (HorizontalScrollView) view.findViewById(R.id.lineChartScrollView);
         chartView = (LineChartView) view.findViewById(R.id.lineChartView);
 
@@ -37,7 +39,7 @@ public class PersonalFragment extends Fragment implements OnClickListener{
                 scrollView.smoothScrollTo(5000,0);
             }
         },300);
-        ImageView back = (ImageView) view.findViewById(R.id.back_personal_image);
+
         back.setOnClickListener(this);
         return view;
     }
@@ -47,6 +49,10 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         if(getActivity() instanceof PersonFragClickListener){
             ((PersonFragClickListener) getActivity()).onPersonFragClick(v);
         }
+    }
+
+    private void loadInfo(){
+        //配置个人信息
     }
 
     public interface PersonFragClickListener{
