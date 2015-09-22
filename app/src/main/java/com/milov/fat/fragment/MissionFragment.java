@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.milov.fat.R;
 
 /**
- * Created by Administrator on 2015/8/23.
+ * Created by Milov on 2015/8/23.
  */
 public class MissionFragment extends Fragment implements View.OnClickListener {
 

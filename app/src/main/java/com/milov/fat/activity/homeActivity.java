@@ -18,6 +18,7 @@ import com.huawei.huaweiwearable.constant.DeviceConnectionState;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
 import com.huawei.huaweiwearable.data.DataTotalMotion;
 import com.milov.fat.R;
+import com.milov.fat.fragment.FirstSetFragment;
 import com.milov.fat.fragment.HomeFragment;
 import com.milov.fat.fragment.MissionFragment;
 import com.milov.fat.fragment.PersonalFragment;
@@ -26,7 +27,8 @@ import com.milov.fat.util.HuaweiWearableHelper;
 import java.util.List;
 
 public class HomeActivity extends Activity implements HomeFragment.HomeFragClickListener,
-        PersonalFragment.PersonFragClickListener,MissionFragment.MissionFragClickListener{
+        PersonalFragment.PersonFragClickListener,MissionFragment.MissionFragClickListener,
+        FirstSetFragment.FirstSelfInfoSetFragClickListener {
 
     /**
      * 首页
@@ -92,6 +94,14 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
 
         //向HuaweiWearableHelper类传递Context
         huawei.onActivityStarted(this, handler);
+    }
+
+    @Override
+    public void onFirstSelfInfoSetFragClick(View view){
+        switch (view.getId()){
+            //回到HomeFragment
+
+        }
     }
 
     @Override

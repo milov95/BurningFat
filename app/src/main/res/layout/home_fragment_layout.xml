@@ -185,7 +185,7 @@
         android:id="@+id/circle_TextView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/light_blue_circle"
         android:layout_alignBottom="@id/homeCurveView"
         android:layout_marginBottom="60dp"
         android:layout_centerHorizontal="true"
