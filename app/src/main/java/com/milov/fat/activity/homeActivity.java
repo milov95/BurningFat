@@ -35,6 +35,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      */
     private HomeFragment homeFragment;
     /**
+     * 第一次打开应用的设置页
+     */
+    private FirstSetFragment firsrSetFragment;
+    /**
      * 个人中心
      */
     private PersonalFragment personalFragment;
@@ -69,11 +73,19 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         //加载HomeFragment
         //Activity在旋屏或从后台切回时有时会重新启动，这时原有的Fragment也会重启，同时又会执行一遍onCreat
         //原来的Fragment会存储在savedInstanceState里，为了避免过多的Fragment产生，这里执行一次判断
+//        if(savedInstanceState == null){
+//            homeFragment = new HomeFragment();
+//            fragmentManager = getFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.add(R.id.home_content, homeFragment, null);
+//            fragmentTransaction.commit();
+//
+//        }
         if(savedInstanceState == null){
-            homeFragment = new HomeFragment();
+            firsrSetFragment = new FirstSetFragment();
             fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.home_content, homeFragment, null);
+            fragmentTransaction.add(R.id.home_content, firsrSetFragment, null);
             fragmentTransaction.commit();
 
         }
@@ -84,6 +96,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     public void onStart(){
         super.onStart();
 
+        if(firsrSetFragment!=null) return;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {

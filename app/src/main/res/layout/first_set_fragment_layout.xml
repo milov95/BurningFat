@@ -17,12 +17,14 @@
         android:orientation="vertical">
 
         <RadioGroup
+            android:id="@+id/first_set_gender_radio_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
             >
             <RadioButton
+                android:id="@+id/first_set_male_radio_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="男"
@@ -30,8 +32,10 @@
                 android:textColor="@color/gray"
                 android:checked="true"
                 android:buttonTint="@color/gray"
+                android:buttonTintMode="multiply"
                 />
             <RadioButton
+                android:id="@+id/first_set_female_radio_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="女"
@@ -51,12 +55,14 @@
             android:layout_marginTop="10dp">
 
             <TextView
+                android:id="@+id/first_set_height"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="175cm"
                 android:textSize="20dp"
                 />
             <TextView
+                android:id="@+id/first_set_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="60kg"
@@ -79,6 +85,7 @@
             android:textSize="18dp"/>
 
         <TextView
+            android:id="@+id/first_set_goal"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,14 +105,14 @@
         android:layout_marginTop="30dp"
         android:layout_below="@id/first_set_info_layout"
         android:textColor="#eeffffff"
-        android:textStyle="bold"
         />
 
     <TextView
+        android:id="@+id/first_set_start"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:gravity="center"
-        android:text="开始任务"
+        android:text="开始体验"
         android:textSize="25dp"
         android:textColor="@android:color/white"
         android:shadowColor="#00000000"
@@ -114,6 +121,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         />
+
 
 
 </android.support.percent.PercentRelativeLayout>

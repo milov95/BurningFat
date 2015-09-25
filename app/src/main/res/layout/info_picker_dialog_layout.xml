@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingTop="10dp"
+    >
+        <TextView
+            android:id="@+id/first_set_height_picker_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="    身高"
+            android:textSize="20dp"
+            android:textColor="@android:color/black"
+            />
+
+        <NumberPicker
+            android:id="@+id/first_set_height_picker"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/first_set_height_picker_text"
+            >
+        </NumberPicker>
+
+        <TextView
+            android:id="@+id/first_set_weight_picker_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="    体重"
+            android:textSize="20dp"
+            android:layout_toRightOf="@id/first_set_height_picker"
+            android:layout_marginStart="10dp"
+            android:textColor="@android:color/black"/>
+
+        <NumberPicker
+            android:id="@+id/first_set_weight_picker"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/first_set_weight_picker_text"
+            android:layout_alignLeft="@id/first_set_weight_picker_text">
+        </NumberPicker>
+
+        <TextView
+            android:id="@+id/first_set_goal_picker_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   目标"
+            android:textSize="20dp"
+            android:layout_toRightOf="@id/first_set_weight_picker"
+            android:layout_marginStart="10dp"
+            android:textColor="@android:color/black"/>
+
+        <NumberPicker
+            android:id="@+id/first_set_goal_picker"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/first_set_weight_picker_text"
+            android:layout_alignLeft="@id/first_set_goal_picker_text">
+        </NumberPicker>
+</RelativeLayout>
