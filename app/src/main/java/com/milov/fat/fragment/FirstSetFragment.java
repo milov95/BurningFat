@@ -4,18 +4,15 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.preference.DialogPreference;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.milov.fat.R;
-import com.milov.fat.activity.HomeActivity;
 import com.milov.fat.util.DataManager;
 
 /**
@@ -28,25 +25,33 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     NumberPicker heightPicker,weightPicker,goalPicker;
     AlertDialog pickerDialog;
     DataManager dataManager;
+    TextView startText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_set_fragment_layout,container,false);
+        startText = (TextView) view.findViewById(R.id.first_set_start);
         height = (TextView) view.findViewById(R.id.first_set_height);
         weight = (TextView) view.findViewById(R.id.first_set_weight);
         goal = (TextView) view.findViewById(R.id.first_set_goal);
+        genderRadioGroup = (RadioGroup) view.findViewById(R.id.first_set_gender_radio_group);
 
+        startText.setOnClickListener(this);
         height.setOnClickListener(this);
         weight.setOnClickListener(this);
         goal.setOnClickListener(this);
 
-        dataManager = dataManager.getInstance();
+        dataManager = dataManager.getInstance(getActivity());
         return view;
     }
 
     @Override
     public void onClick(View v) {
         if( v.getId() == R.id.first_set_start && getActivity() instanceof FirstSelfInfoSetFragClickListener){
+            dataManager.saveSelfData(genderRadioGroup.getCheckedRadioButtonId() == R.id.first_set_male_radio_button?1:2,
+                    dataManager.getSelfData(DataManager.HEIGHT),
+                    dataManager.getSelfData(DataManager.WEIGHT),
+                    dataManager.getSelfData(DataManager.GOAL));
             ((FirstSelfInfoSetFragClickListener) getActivity()).onFirstSelfInfoSetFragClick(v);
         } else {
             showPickerDialog();
@@ -66,7 +71,11 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(),"height:"+heightPicker.getValue(),Toast.LENGTH_SHORT).show();
+                        height.setText(dataManager.heights[heightPicker.getValue()]);
+                        weight.setText(dataManager.weights[weightPicker.getValue()]);
+                        goal.setText(dataManager.goals[goalPicker.getValue()]);
+
+                        dataManager.saveSelfData(-1,heightPicker.getValue(),weightPicker.getValue(),goalPicker.getValue());
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -92,15 +101,15 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
 
         heightPicker.setMinValue(0);
         heightPicker.setMaxValue(dataManager.heights.length - 1);
-        heightPicker.setValue(17);
+        heightPicker.setValue(dataManager.getSelfData(DataManager.HEIGHT));
 
         weightPicker.setMinValue(0);
-        weightPicker.setMaxValue(dataManager.weights.length-1);
-        weightPicker.setValue(10);
+        weightPicker.setMaxValue(dataManager.weights.length - 1);
+        weightPicker.setValue(dataManager.getSelfData(DataManager.WEIGHT));
 
         goalPicker.setMinValue(0);
-        goalPicker.setMaxValue(dataManager.goals.length-1);
-        goalPicker.setValue(4);
+        goalPicker.setMaxValue(dataManager.goals.length - 1);
+        goalPicker.setValue(dataManager.getSelfData(DataManager.GOAL));
     }
 
     public interface FirstSelfInfoSetFragClickListener{

@@ -22,6 +22,7 @@ import com.milov.fat.fragment.FirstSetFragment;
 import com.milov.fat.fragment.HomeFragment;
 import com.milov.fat.fragment.MissionFragment;
 import com.milov.fat.fragment.PersonalFragment;
+import com.milov.fat.util.DataManager;
 import com.milov.fat.util.HuaweiWearableHelper;
 
 import java.util.List;
@@ -58,36 +59,40 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 用于响应HuaweiWearableHelper状态回调的Handler
      */
     public MyHandler handler;
+    /**
+     * 数据管理器
+     */
+    private DataManager dataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity_layout);
 
+        dataManager = DataManager.getInstance(getApplicationContext());
         handler = new MyHandler();
 
         //实例化HuaweiWearleHelper工具类
         if(huawei == null )
             huawei = new HuaweiWearableHelper();
 
-        //加载HomeFragment
         //Activity在旋屏或从后台切回时有时会重新启动，这时原有的Fragment也会重启，同时又会执行一遍onCreat
         //原来的Fragment会存储在savedInstanceState里，为了避免过多的Fragment产生，这里执行一次判断
-//        if(savedInstanceState == null){
-//            homeFragment = new HomeFragment();
-//            fragmentManager = getFragmentManager();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.add(R.id.home_content, homeFragment, null);
-//            fragmentTransaction.commit();
-//
-//        }
-        if(savedInstanceState == null){
+        //一次启动程序，或者启动后还未设置个人信息时，打开firstSetFragment
+        if(savedInstanceState == null && dataManager.getSelfData(DataManager.GENDER)!=0){
             firsrSetFragment = new FirstSetFragment();
             fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.home_content, firsrSetFragment, null);
             fragmentTransaction.commit();
-
+        }
+        //否则直接进入主页
+        else if(savedInstanceState == null){
+            homeFragment = new HomeFragment();
+            fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.home_content, homeFragment, null);
+            fragmentTransaction.commit();
         }
 
     }
@@ -95,6 +100,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     @Override
     public void onStart(){
         super.onStart();
+
+        //向HuaweiWearableHelper类传递Context
+        huawei.onActivityStarted(this, handler);
 
         if(firsrSetFragment!=null) return;
         handler.postDelayed(new Runnable() {
@@ -104,16 +112,26 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 refresh();
             }
         }, 500);
-
-        //向HuaweiWearableHelper类传递Context
-        huawei.onActivityStarted(this, handler);
     }
 
     @Override
     public void onFirstSelfInfoSetFragClick(View view){
         switch (view.getId()){
-            //回到HomeFragment
+            case R.id.first_set_start:
+                //进入HomeFragment
+                homeFragment = new HomeFragment();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.home_content,homeFragment);
+                fragmentTransaction.commit();
 
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (huawei.manager != null)
+                            homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                        refresh();
+                    }
+                }, 500);
         }
     }
 

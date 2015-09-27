@@ -67,13 +67,9 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      */
     public boolean gettingTimeHealth = false;
     /**
-     * SharedPreference保存月健康数据
+     * 数据管理器
      */
-    private SharedPreferences sp;
-    /**
-     * SharedPreferences.Editor
-     */
-    private SharedPreferences.Editor editor;
+    private DataManager dataManager;
     /**
      * 获取设备连接状态
      */
@@ -157,10 +153,10 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             final int j = i;
             final String date = list.get(i+1);
             while (gettingTimeHealth) Log.i("getting","getting");
-            if(sp.getInt(date,-1)!=-1){
-                Message msg = handler.obtainMessage(TIME_HEALTH, j, 1, sp.getInt(date, -1));
+            if(dataManager.getMonthData(date)!=-1){
+                Message msg = handler.obtainMessage(TIME_HEALTH, j, 1, dataManager.getMonthData(date));
                 handler.handleMessage(msg);
-                Log.i("onSucess", "获取指定时间段数据成功:" + sp.getInt(date,-1) );
+                Log.i("onSucess", "获取指定时间段数据成功:" + dataManager.getMonthData(date) );
                 continue;
             }
             manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
@@ -173,8 +169,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
                     if(dataList.size()!=0)
                         cal = dataList.get(dataList.size()-1).getTotalCalorie();
                     //存储数据到SharedPreference
-                    editor.putInt(date, cal);
-                    editor.commit();
+                    dataManager.saveMonthData(date,cal);
 
                     Message msg = handler.obtainMessage(TIME_HEALTH, j, 0, cal);
                     handler.handleMessage(msg);
@@ -251,8 +246,8 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             manager.registerConnectStateCallback(deviceConnectStatusCallback);
             //获得HomeActivity的Handler
             this.handler = handler;
-            sp = context.getSharedPreferences("monthData", Activity.MODE_PRIVATE);
-            editor = sp.edit();
+            //获得数据管理器单一实例
+            dataManager = DataManager.getInstance(context);
         }
     }
 
