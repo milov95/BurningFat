@@ -48,7 +48,8 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if( v.getId() == R.id.first_set_start && getActivity() instanceof FirstSelfInfoSetFragClickListener){
-            dataManager.saveSelfData(genderRadioGroup.getCheckedRadioButtonId() == R.id.first_set_male_radio_button?1:2,
+            dataManager.saveSelfData(
+                    genderRadioGroup.getCheckedRadioButtonId() == R.id.first_set_male_radio_button ? DataManager.MALE : DataManager.FEMALE,
                     dataManager.getSelfData(DataManager.HEIGHT),
                     dataManager.getSelfData(DataManager.WEIGHT),
                     dataManager.getSelfData(DataManager.GOAL));

@@ -101,14 +101,24 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     public void onStart(){
         super.onStart();
 
+        if(firsrSetFragment!=null) return;
+
         //向HuaweiWearableHelper类传递Context
         huawei.onActivityStarted(this, handler);
 
-        if(firsrSetFragment!=null) return;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        if(firsrSetFragment!=null) return ;
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(huawei.manager!=null) homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                if (huawei.manager != null)
+                    homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
                 refresh();
             }
         }, 500);
@@ -123,6 +133,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.home_content,homeFragment);
                 fragmentTransaction.commit();
+                firsrSetFragment=null;
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -178,8 +189,8 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 break;
             //刷新
             case R.id.refresh_image:
-                if(huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED){
-                    Toast.makeText(getApplicationContext(),"设备连接失败",Toast.LENGTH_SHORT).show();
+                if(huawei.manager ==null || huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED){
+                    Toast.makeText(getApplicationContext(),"请确保手环正常连接",Toast.LENGTH_SHORT).show();
                 }
                 refresh();
         }
@@ -233,23 +244,31 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                             showChangedStatus(msg.obj);
                             break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
-                            if(msg.obj==null) /*失败*/ ;
-                            else{
+                            if (msg.obj == null) /*失败*/ ;
+                            else {
                                 setTodayHealthData(msg.obj);
                             }
                             break;
                         case HuaweiWearableHelper.TIME_HEALTH:
-                            if(msg.obj==null) Toast.makeText(getApplicationContext(),"获取月数据失败",Toast.LENGTH_SHORT).show();
-                            else{
-                                if(msg.arg2==1){
+                            if (msg.obj == null)
+                                Toast.makeText(getApplicationContext(), "获取月数据失败", Toast.LENGTH_SHORT).show();
+                            else {
+                                if (msg.arg2 == 1) {
                                     //读取存储的健康数据
-                                    Log.i("msg.obj","读取存储的数据");
-                                    personalFragment.chartView.drawHealthData(msg.arg1,(int)msg.obj);
-                                }
-                                else {
-                                    //读取设备的健康数据
-                                    Log.i("msg.obj","读取设备的数据");
+                                    Log.i("msg.obj", "读取存储的数据");
                                     personalFragment.chartView.drawHealthData(msg.arg1, (int) msg.obj);
+                                    if (msg.arg1 == 29) {
+                                        //读取月数据完毕
+                                        personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
+                                    }
+                                } else {
+                                    //读取设备的健康数据
+                                    Log.i("msg.obj", "读取设备的数据");
+                                    personalFragment.chartView.drawHealthData(msg.arg1, (int) msg.obj);
+                                    if (msg.arg1 == 29) {
+                                        //读取月数据完毕
+                                        personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
+                                    }
                                 }
                             }
                             break;
@@ -274,39 +293,15 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 steps += motion.getStep();
             }
         }
-        homeFragment.calStillText.setText(calorie + "");
+        if(calorie>=dataManager.getMissonData(DataManager.DAILY_GOAL)){
+            //showSuccess
+        }
+        else
+            homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL)-calorie + "");
         homeFragment.stepText.setText(steps + "步");
         homeFragment.calText.setText(calorie + "千卡");
         Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
     }
-
-//    /**
-//     * （handler内使用）获取DataHealthData成功后调用
-//     * @param obj 存储DataHealthData
-//     */
-//    private void cacheTimeHealth(int index,Object obj){
-//        DataHealthData data = (DataHealthData) obj;
-//        ArrayList<DataRawSportData> list = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
-//        int cal = 0;
-//        for(DataRawSportData sportData : list){
-//            cal+=sportData.getTotalCalorie();
-//        }
-//        HashMap<String,Integer> map = new HashMap<String,Integer>();
-//        map.put("index",index);
-//        map.put("cal",cal);
-//        if(timeHealthList.size()==30){
-//            timeHealthList.clear();
-//        }
-//        timeHealthList.add(map);
-//        for(HashMap<String,Integer> Map:timeHealthList){
-//            Log.i("序号为"+ Map.get(index)+"的卡路里消耗总值",Map.get("cal")+"cal");
-//        }
-//        Log.i("序号为"+ index,obj+"");
-//        if(timeHealthList.size()==30){
-//            //加载完毕，绘制主页视图
-//
-//        }
-//    }
 
     /**
      * （handler内使用）设备连接状态改变时调用
@@ -364,6 +359,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         if(gonnaShow){
             homeFragment.openAppText.setVisibility(View.VISIBLE);
             homeFragment.openAppButton.setVisibility(View.VISIBLE);
+            homeFragment.openAppText.requestFocus();
         } else {
             homeFragment.openAppText.setVisibility(View.GONE);
             homeFragment.openAppButton.setVisibility(View.GONE);

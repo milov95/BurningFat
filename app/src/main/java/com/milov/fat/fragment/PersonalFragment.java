@@ -3,14 +3,17 @@ package com.milov.fat.fragment;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.milov.fat.R;
+import com.milov.fat.util.DataManager;
 import com.milov.fat.view.LineChartView;
 
 
@@ -18,20 +21,20 @@ import com.milov.fat.view.LineChartView;
  * Created by Milov on 2015/8/23.
  */
 public class PersonalFragment extends Fragment implements OnClickListener{
-
+    public TextView averageCal,assess;
+    private TextView height,weight,gender;
     private HorizontalScrollView scrollView;
+    private ImageView back;
     public LineChartView chartView;
-
-    public PersonalFragment(){
-    }
+    private DataManager dataManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.personal_fragment_layout,container,false);
-        ImageView back = (ImageView) view.findViewById(R.id.back_personal_image);
+        dataManager = DataManager.getInstance(getActivity());
 
-        scrollView = (HorizontalScrollView) view.findViewById(R.id.lineChartScrollView);
-        chartView = (LineChartView) view.findViewById(R.id.lineChartView);
+        View view = inflater.inflate(R.layout.personal_fragment_layout,container,false);
+        initView(view);
+        showInfo();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -51,8 +54,21 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         }
     }
 
-    private void loadInfo(){
-        //配置个人信息
+    private void initView(View view){
+        scrollView = (HorizontalScrollView) view.findViewById(R.id.lineChartScrollView);
+        chartView = (LineChartView) view.findViewById(R.id.lineChartView);
+        back = (ImageView) view.findViewById(R.id.back_personal_image);
+        height = (TextView) view.findViewById(R.id.person_height);
+        weight = (TextView) view.findViewById(R.id.person_weight);
+        gender = (TextView) view.findViewById(R.id.person_gender);
+        averageCal = (TextView) view.findViewById(R.id.average_cal);
+        assess = (TextView) view.findViewById(R.id.person_assess);
+    }
+
+    private void showInfo(){
+        height.setText(dataManager.heights[dataManager.getSelfData(DataManager.HEIGHT)]);
+        weight.setText(dataManager.weights[dataManager.getSelfData(DataManager.WEIGHT)]);
+        gender.setText(dataManager.getSelfData(DataManager.GENDER)==1?"男":"女");
     }
 
     public interface PersonFragClickListener{

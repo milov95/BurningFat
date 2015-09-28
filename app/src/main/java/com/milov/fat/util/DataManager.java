@@ -10,7 +10,8 @@ import android.content.SharedPreferences;
 public class DataManager {
 
     public static final int MALE = 1, FEMALE = 2;
-    public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13;
+    public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19;
+
     /**
      * 用于获取应用数据
      */
@@ -20,19 +21,21 @@ public class DataManager {
      */
     public String[] heights,weights,goals;
     /**
-     * 月健康数据SP,用户信息SP（含任务信息）；
+     * 月健康数据SP,用户信息SP（含任务目标），任务数据SP
      */
-    private SharedPreferences monthDataSP,selfDataSP;
+    private SharedPreferences monthDataSP,selfDataSP,missionDataSP;
     /**
      * SharedPreferences.Editor
      */
-    private SharedPreferences.Editor monthDataEditor,selfDataEditor;
+    private SharedPreferences.Editor monthDataEditor,selfDataEditor,missionDataEditor;
 
     private DataManager(Context context){
         monthDataSP = context.getSharedPreferences("monthData", Activity.MODE_PRIVATE);
         monthDataEditor = monthDataSP.edit();
-        selfDataSP = context.getSharedPreferences("selfInfo",Activity.MODE_PRIVATE);
+        selfDataSP = context.getSharedPreferences("selfInfo", Activity.MODE_PRIVATE);
         selfDataEditor = selfDataSP.edit();
+        missionDataSP = context.getSharedPreferences("missionData",Activity.MODE_PRIVATE);
+        missionDataEditor = missionDataSP.edit();
 
         initSelfInfoInterval();
     }
@@ -90,7 +93,7 @@ public class DataManager {
     /**
      * 获取个人信息数据，通过类型获取对应数据
      * @param type 信息类型
-     * @return 信息数据
+     * @return 对应的信息数据
      */
     public int getSelfData(int type){
         switch (type){
@@ -125,6 +128,65 @@ public class DataManager {
      */
     public int getMonthData(String date){
         return monthDataSP.getInt(date,-1);
+    }
+
+    /**
+     * 设置任务
+     * @param startDate 任务开始时间,"yyyyMMdd000000"
+     */
+    public void setMissonData(int startDate){
+        missionDataEditor.putInt("startDate",startDate);
+        //保存剩余项
+        missionDataEditor.commit();
+    }
+
+    /**
+     * 获取任务信息
+     * @param type 信息类型
+     * @return 对应的信息数据
+     */
+    public int getMissonData(int type){
+        switch (type){
+            case GOAL:
+                return selfDataSP.getInt("goal",0);
+            case PERIOD:
+                return missionDataSP.getInt("period",0);
+            case COMPLETE_DAYS:
+                return missionDataSP.getInt("completeDays",0);
+            case REACH_DAYS:
+                return missionDataSP.getInt("reachDays",0);
+            case DAILY_GOAL:
+                return missionDataSP.getInt("dailyGoal",620);
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * 获取用户的日均卡路里消耗值
+     */
+    public int getAverageCal(){
+        if(selfDataSP.getInt("totalDays",0)==0) return 0;
+        return selfDataSP.getInt("totalCal",0)/selfDataSP.getInt("totalDays",0);
+    }
+
+    public int getTotalCal(){
+        return selfDataSP.getInt("totalCal",0);
+    }
+
+    public int getTotalDays(){
+        return selfDataSP.getInt("totalDays",0);
+    }
+
+    /**
+     * 存储日均卡路里数据
+     * @param totalCal 总共的卡路里值
+     * @param totalDays 有卡路里消耗值的总天数
+     */
+    public void saveAverageCal(int totalCal,int totalDays){
+        selfDataEditor.putInt("totalCal",totalCal);
+        selfDataEditor.putInt("totalDays",totalDays);
+        selfDataEditor.commit();
     }
 }
 

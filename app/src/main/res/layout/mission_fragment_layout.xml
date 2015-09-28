@@ -143,12 +143,13 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/mission_suggest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/mission_info"
         android:gravity="center"
         android:textSize="17dp"
-        android:text="根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗值为xxx千卡"
+        android:text="根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗达标值为xxx千卡"
         />
 
     <RelativeLayout

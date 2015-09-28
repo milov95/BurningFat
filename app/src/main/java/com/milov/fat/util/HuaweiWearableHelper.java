@@ -168,9 +168,12 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
                     int cal = 0;
                     if(dataList.size()!=0)
                         cal = dataList.get(dataList.size()-1).getTotalCalorie();
-                    //存储数据到SharedPreference
+                    //存储
                     dataManager.saveMonthData(date,cal);
-
+                    if(cal!=0){
+                    //添加到日均卡路里计算数据
+                        dataManager.saveAverageCal(dataManager.getTotalCal()+cal,dataManager.getTotalDays()+1);
+                    }
                     Message msg = handler.obtainMessage(TIME_HEALTH, j, 0, cal);
                     handler.handleMessage(msg);
                     Log.i("onSucess", "获取指定时间段数据成功:" + cal);
