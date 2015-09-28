@@ -53,6 +53,8 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
                     dataManager.getSelfData(DataManager.HEIGHT),
                     dataManager.getSelfData(DataManager.WEIGHT),
                     dataManager.getSelfData(DataManager.GOAL));
+            dataManager.startMisson();
+
             ((FirstSelfInfoSetFragClickListener) getActivity()).onFirstSelfInfoSetFragClick(v);
         } else {
             showPickerDialog();

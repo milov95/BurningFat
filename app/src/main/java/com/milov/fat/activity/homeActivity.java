@@ -93,6 +93,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.home_content, homeFragment, null);
             fragmentTransaction.commit();
+
         }
 
     }
@@ -117,8 +118,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (huawei.manager != null)
+                if (huawei.manager != null) {
                     homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                    loadMissionProgress();
+                }
                 refresh();
             }
         }, 500);
@@ -138,8 +141,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (huawei.manager != null)
+                        if (huawei.manager != null) {
                             homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
+                            loadMissionProgress();
+                        }
                         refresh();
                     }
                 }, 500);
@@ -431,6 +436,19 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             }
         }.start();
     }
+
+    /**
+     * 加载任务进度条
+     */
+    private void loadMissionProgress(){
+        new Thread(){
+            @Override
+            public void run(){
+                huawei.getMissionProgress();
+            }
+        }.start();
+    }
+
     /**
      * 用于传递HomeActivity的Context和handler的回调接口
      */

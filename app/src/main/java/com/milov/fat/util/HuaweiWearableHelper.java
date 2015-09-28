@@ -210,6 +210,68 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
     }
 
     /**
+     * 获取任务进度条数据
+     */
+    public void getMissionProgress(){
+        ArrayList<String> list = getMissionEachDayTime();
+        for(int i = 0;i<list.size()-1;i++){
+            final int j = i;
+            final String date = list.get(i+1);
+            while (gettingTimeHealth) Log.i("getting","getting");
+            if(dataManager.getMonthData(date)!=-1 && dataManager.getMonthData(date)>=dataManager.getSelfData(DataManager.DAILY_GOAL) ){
+                dataManager.addReachDays();
+                Log.i("onSucess", "任务达标天数+1" + dataManager.getMonthData(date) );
+                continue;
+            }
+            manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
+                @Override
+                public void onSuccess(Object object) {
+                    //得到数据
+                    DataHealthData data = (DataHealthData) object;
+                    ArrayList<DataRawSportData> dataList = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
+                    int cal = 0;
+                    if(dataList.size()!=0)
+                        cal = dataList.get(dataList.size()-1).getTotalCalorie();
+                    //存储
+                    dataManager.saveMonthData(date, cal);
+                    if(cal>=dataManager.getSelfData(DataManager.DAILY_GOAL))
+                        dataManager.addReachDays();
+                    Log.i("onSucess", "任务达标天数+1" + cal);
+                    gettingTimeHealth = false;
+                }
+
+                @Override
+                public void onFailure(int err_code, String err_msg) {
+                    Log.i("onFailure", "获取任务达标天数失败!");
+                    gettingTimeHealth = false;
+                }
+            });
+            gettingTimeHealth = true;
+        }
+        //获取任务进度数据完毕，通知绘制
+        Log.i("获取任务达标天数","获取完毕");
+    }
+
+    /**
+     * 获取任务开始以来每天零点的时间，其中第0位为今天凌晨的时间，
+     */
+    private ArrayList<String> getMissionEachDayTime(){
+        ArrayList <String> list= new ArrayList<String>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd000000");
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+
+        int comleteDays = dataManager.getMissonData(DataManager.COMPLETE_DAYS);
+        for(int i = comleteDays ; i >= 0 ; i-- ){
+            String time = format.format(c.getTime());
+            Log.i("获取的日期",time);
+            list.add(time);
+            c.add(Calendar.DAY_OF_YEAR, -1);
+        }
+        return list;
+    }
+
+    /**
      * 设备连接状态的回调类
      */
     private class MyDeviceConnectStatusCallback extends IDeviceConnectStatusCallback{

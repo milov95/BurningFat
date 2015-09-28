@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by Milov on 2015/9/25.
  */
 public class DataManager {
 
     public static final int MALE = 1, FEMALE = 2;
-    public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19;
+    public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,
+            DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20;
 
     /**
      * 用于获取应用数据
@@ -132,11 +136,14 @@ public class DataManager {
 
     /**
      * 设置任务
-     * @param startDate 任务开始时间,"yyyyMMdd000000"
      */
-    public void setMissonData(int startDate){
-        missionDataEditor.putInt("startDate",startDate);
-        //保存剩余项
+    public void startMisson(){
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+
+        missionDataEditor.putInt("startDayOfYear",c.get(Calendar.DAY_OF_YEAR));
+        missionDataEditor.putInt("period",30);
+        missionDataEditor.putInt("dailyGoal",650);
         missionDataEditor.commit();
     }
 
@@ -146,13 +153,18 @@ public class DataManager {
      * @return 对应的信息数据
      */
     public int getMissonData(int type){
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+
         switch (type){
+            case START_TIME:
+                return missionDataSP.getInt("startDayOfYear",0);
             case GOAL:
                 return selfDataSP.getInt("goal",0);
             case PERIOD:
                 return missionDataSP.getInt("period",0);
             case COMPLETE_DAYS:
-                return missionDataSP.getInt("completeDays",0);
+                return c.get(Calendar.DAY_OF_YEAR)-missionDataSP.getInt("startDayOfYear",0);
             case REACH_DAYS:
                 return missionDataSP.getInt("reachDays",0);
             case DAILY_GOAL:
@@ -160,6 +172,11 @@ public class DataManager {
             default:
                 return -1;
         }
+    }
+
+    public void addReachDays(){
+        missionDataEditor.putInt("reachDays",missionDataSP.getInt("reachDays",0)+1);
+        missionDataEditor.commit();
     }
 
     /**
