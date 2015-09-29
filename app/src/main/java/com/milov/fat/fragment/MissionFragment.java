@@ -1,5 +1,7 @@
 package com.milov.fat.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -60,8 +62,42 @@ public class MissionFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.delete_mission_button){
+            AlertDialog deleteWarning = new AlertDialog.Builder(getActivity())
+                    .setTitle("删除任务")
+                    .setMessage("确定要删除任务？")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .create();
+            deleteWarning.show();
             return;
         } else if (v.getId()==R.id.reset_mission_button){
+            AlertDialog deleteWarning = new AlertDialog.Builder(getActivity())
+                    .setTitle("重置任务")
+                    .setMessage("确定要重置任务？")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .create();
+            deleteWarning.show();
             return;
         }
 

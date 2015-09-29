@@ -34,6 +34,7 @@
 
 
     <LinearLayout
+        android:id="@+id/status_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -138,7 +139,18 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             />
+
+        <com.milov.fat.view.MissionProgressView
+            android:id="@+id/mission_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            />
+
     </LinearLayout>
+
+
 
     <com.milov.fat.view.HomeCurveView
         android:id="@+id/homeCurveView"
@@ -178,8 +190,6 @@
                 />
 
         </LinearLayout>
-
-
 
     </LinearLayout>
 

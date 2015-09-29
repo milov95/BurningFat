@@ -3,6 +3,7 @@ package com.milov.fat.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -14,7 +15,8 @@ public class DataManager {
 
     public static final int MALE = 1, FEMALE = 2;
     public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,
-            DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20;
+            DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20,AGE = 21,
+            BREAKFAST = 22,LUNCH = 23,SUPPER = 24;
 
     /**
      * 用于获取应用数据
@@ -23,7 +25,7 @@ public class DataManager {
     /**
      * 设置用户信息及任务时的选择区间
      */
-    public String[] heights,weights,goals;
+    public String[] heights,weights,goals,ages,breakfasts,lunches,suppers;
     /**
      * 月健康数据SP,用户信息SP（含任务目标），任务数据SP
      */
@@ -57,6 +59,10 @@ public class DataManager {
      * 初始化用户信息以及任务的选择区间
      */
     private void initSelfInfoInterval(){
+        ages = new String[61];
+        for(int i=0;i<=60;i++){
+            ages[i]=i+10+"岁";
+        }
         heights = new String[51];
         for(int i = 0; i <= 50;i++){
             heights[i]=i+150+"cm";
@@ -80,13 +86,22 @@ public class DataManager {
     }
 
     /**
+     * 初始化食谱信息
+     */
+    private void initRecipeInfo(){
+
+    }
+
+    /**
      * 存储个人信息数据，包含任务目标
+     * @param age 年龄[0,60]([10岁,70岁])，-1为不存储
      * @param gender 性别{1,2}({男，女})，-1为不存储
      * @param height 身高[0,50]([150cm,200cm])，-1为不存储
      * @param weight 体重[0,60]([40kg,100kg])，-1为不存储
      * @param goal 任务目标[0,19]([-1kg,-20kg])，-1为不存储
      */
-    public void saveSelfData(int gender,int height,int weight,int goal){
+    public void saveSelfData(int age,int gender,int height,int weight,int goal){
+        if(age!=-1) selfDataEditor.putInt("age",age);
         if(gender!=-1) selfDataEditor.putInt("gender",gender);
         if(height!=-1) selfDataEditor.putInt("height",height);
         if(weight!=-1) selfDataEditor.putInt("weight",weight);
@@ -101,6 +116,8 @@ public class DataManager {
      */
     public int getSelfData(int type){
         switch (type){
+            case AGE:
+                return selfDataSP.getInt("age",0);
             case GENDER:
                 //0代表第一次启动应用程序或者自从启动应用程序后还没有设置过个人信息
                 return selfDataSP.getInt("gender",0);
@@ -142,9 +159,24 @@ public class DataManager {
         c.setTime(new Date());
 
         missionDataEditor.putInt("startDayOfYear",c.get(Calendar.DAY_OF_YEAR));
-        missionDataEditor.putInt("period",30);
-        missionDataEditor.putInt("dailyGoal",650);
+        int goal = selfDataSP.getInt("goal",0);
+        int period;
+        int daily;
+        if(selfDataSP.getInt("gender",0)==DataManager.MALE){
+            period = (goal+1)*10;
+            missionDataEditor.putInt("period",period);
+        } else {
+            period = (goal+1)*15;
+            missionDataEditor.putInt("period",period);
+        }
+        daily = calculateDailyGoal(period,goal,selfDataSP.getInt("age",0));
+        missionDataEditor.putInt("dailyGoal",daily);
         missionDataEditor.commit();
+    }
+
+    private int calculateDailyGoal(int period,int goal,int age){
+
+        return 1;
     }
 
     /**
@@ -173,6 +205,8 @@ public class DataManager {
                 return -1;
         }
     }
+
+
 
     public void addReachDays(){
         missionDataEditor.putInt("reachDays",missionDataSP.getInt("reachDays",0)+1);
@@ -204,6 +238,15 @@ public class DataManager {
         selfDataEditor.putInt("totalCal",totalCal);
         selfDataEditor.putInt("totalDays",totalDays);
         selfDataEditor.commit();
+    }
+
+    /**
+     * 获取食谱
+     * @param type BREAKFAST,LUNCH,SUPPER
+     * @return 食谱信息
+     */
+    public String getRecipe(int type){
+        return "";
     }
 }
 

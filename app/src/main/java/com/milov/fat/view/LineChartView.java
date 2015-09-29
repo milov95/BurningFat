@@ -25,12 +25,10 @@ import java.util.Map;
  */
 public class LineChartView extends View {
     private Paint gridPaint,linePaint,fillPaint,textPaint,textStrokePaint;
-    private Path linePath,textPath;
     private DisplayUtil displayUtil;
     private float space,height,baseHeight,unitHeight;
     private ArrayList<Map<String,Integer>> dataList;
     private Calendar c;
-    private HorizontalScrollView scrollView;
     public LineChartView(Context context){
         this(context, null );
     }
@@ -138,7 +136,7 @@ public class LineChartView extends View {
         }
     }
 
-    public void drawHealthData(int index,int data){
+    public void loadHealthData(int index, int data){
         Map map = dataList.get(index);
         map.put("data",data);
         Log.i("----------draw---------",data+"");

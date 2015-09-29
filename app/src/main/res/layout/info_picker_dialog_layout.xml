@@ -5,21 +5,43 @@
     android:gravity="center"
     android:paddingTop="10dp"
     >
+
         <TextView
-            android:id="@+id/first_set_height_picker_text"
+            android:id="@+id/first_set_age_picker_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="    身高"
-            android:textSize="20dp"
+            android:text="    年龄"
+            android:textSize="18dp"
             android:textColor="@android:color/black"
             />
 
         <NumberPicker
+            android:id="@+id/first_set_age_picker"
+            android:layout_width="68dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/first_set_age_picker_text"
+            >
+        </NumberPicker>
+
+        <TextView
+            android:id="@+id/first_set_height_picker_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   身高"
+            android:textSize="18dp"
+            android:layout_toRightOf="@id/first_set_age_picker"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="8dp"
+            />
+
+        <NumberPicker
             android:id="@+id/first_set_height_picker"
-            android:layout_width="80dp"
+            android:layout_width="68dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_below="@id/first_set_height_picker_text"
+            android:layout_alignLeft="@id/first_set_height_picker_text"
             >
         </NumberPicker>
 
@@ -27,15 +49,15 @@
             android:id="@+id/first_set_weight_picker_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="    体重"
-            android:textSize="20dp"
+            android:text="   体重"
+            android:textSize="18dp"
             android:layout_toRightOf="@id/first_set_height_picker"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:textColor="@android:color/black"/>
 
         <NumberPicker
             android:id="@+id/first_set_weight_picker"
-            android:layout_width="80dp"
+            android:layout_width="68dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_below="@id/first_set_weight_picker_text"
@@ -47,17 +69,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="   目标"
-            android:textSize="20dp"
+            android:textSize="18dp"
             android:layout_toRightOf="@id/first_set_weight_picker"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:textColor="@android:color/black"/>
 
         <NumberPicker
             android:id="@+id/first_set_goal_picker"
-            android:layout_width="80dp"
+            android:layout_width="68dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_below="@id/first_set_weight_picker_text"
             android:layout_alignLeft="@id/first_set_goal_picker_text">
         </NumberPicker>
+
+
 </RelativeLayout>

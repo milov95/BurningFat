@@ -261,7 +261,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                 if (msg.arg2 == 1) {
                                     //读取存储的健康数据
                                     Log.i("msg.obj", "读取存储的数据");
-                                    personalFragment.chartView.drawHealthData(msg.arg1, (int) msg.obj);
+                                    personalFragment.chartView.loadHealthData(msg.arg1, (int) msg.obj);
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
                                         personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
@@ -269,7 +269,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                 } else {
                                     //读取设备的健康数据
                                     Log.i("msg.obj", "读取设备的数据");
-                                    personalFragment.chartView.drawHealthData(msg.arg1, (int) msg.obj);
+                                    personalFragment.chartView.loadHealthData(msg.arg1, (int) msg.obj);
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
                                         personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
@@ -303,8 +303,8 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         }
         else
             homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL)-calorie + "");
-        homeFragment.stepText.setText(steps + "步");
-        homeFragment.calText.setText(calorie + "千卡");
+        homeFragment.stepText.setText(steps + " 步");
+        homeFragment.calText.setText(calorie + " 千卡");
         Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
     }
 
@@ -379,10 +379,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             homeFragment.calStillText.setVisibility(View.VISIBLE);
             homeFragment.unitText.setVisibility(View.VISIBLE);
             homeFragment.manBar.setVisibility(View.VISIBLE);
+            homeFragment.progressView.setVisibility(View.VISIBLE);
         } else {
             homeFragment.calStillText.setVisibility(View.GONE);
             homeFragment.unitText.setVisibility(View.GONE);
             homeFragment.manBar.setVisibility(View.GONE);
+            homeFragment.progressView.setVisibility(View.GONE);
         }
     }
 

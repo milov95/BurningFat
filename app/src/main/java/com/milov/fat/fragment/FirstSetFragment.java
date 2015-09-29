@@ -21,8 +21,8 @@ import com.milov.fat.util.DataManager;
 public class FirstSetFragment extends Fragment implements View.OnClickListener {
 
     RadioGroup genderRadioGroup;
-    TextView height,weight,goal;
-    NumberPicker heightPicker,weightPicker,goalPicker;
+    TextView age,height,weight,goal;
+    NumberPicker agePicker,heightPicker,weightPicker,goalPicker;
     AlertDialog pickerDialog;
     DataManager dataManager;
     TextView startText;
@@ -31,12 +31,14 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_set_fragment_layout,container,false);
         startText = (TextView) view.findViewById(R.id.first_set_start);
+        age = (TextView) view.findViewById(R.id.first_set_age);
         height = (TextView) view.findViewById(R.id.first_set_height);
         weight = (TextView) view.findViewById(R.id.first_set_weight);
         goal = (TextView) view.findViewById(R.id.first_set_goal);
         genderRadioGroup = (RadioGroup) view.findViewById(R.id.first_set_gender_radio_group);
 
         startText.setOnClickListener(this);
+        age.setOnClickListener(this);
         height.setOnClickListener(this);
         weight.setOnClickListener(this);
         goal.setOnClickListener(this);
@@ -49,6 +51,7 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if( v.getId() == R.id.first_set_start && getActivity() instanceof FirstSelfInfoSetFragClickListener){
             dataManager.saveSelfData(
+                    dataManager.getSelfData(DataManager.AGE),
                     genderRadioGroup.getCheckedRadioButtonId() == R.id.first_set_male_radio_button ? DataManager.MALE : DataManager.FEMALE,
                     dataManager.getSelfData(DataManager.HEIGHT),
                     dataManager.getSelfData(DataManager.WEIGHT),
@@ -74,11 +77,12 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        age.setText(dataManager.ages[agePicker.getValue()]);
                         height.setText(dataManager.heights[heightPicker.getValue()]);
                         weight.setText(dataManager.weights[weightPicker.getValue()]);
                         goal.setText(dataManager.goals[goalPicker.getValue()]);
 
-                        dataManager.saveSelfData(-1,heightPicker.getValue(),weightPicker.getValue(),goalPicker.getValue());
+                        dataManager.saveSelfData(agePicker.getValue(),-1,heightPicker.getValue(),weightPicker.getValue(),goalPicker.getValue());
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -92,15 +96,19 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initNumberPicker(View view){
+        agePicker = (NumberPicker) view.findViewById(R.id.first_set_age_picker);
         heightPicker = (NumberPicker) view.findViewById(R.id.first_set_height_picker);
         weightPicker = (NumberPicker) view.findViewById(R.id.first_set_weight_picker);
         goalPicker = (NumberPicker) view.findViewById(R.id.first_set_goal_picker);
 
-
-
+        agePicker.setDisplayedValues(dataManager.ages);
         heightPicker.setDisplayedValues(dataManager.heights);
         weightPicker.setDisplayedValues(dataManager.weights);
         goalPicker.setDisplayedValues(dataManager.goals);
+
+        agePicker.setMinValue(0);
+        agePicker.setMaxValue(60);
+        agePicker.setValue(dataManager.getSelfData(DataManager.AGE));
 
         heightPicker.setMinValue(0);
         heightPicker.setMaxValue(dataManager.heights.length - 1);

@@ -26,6 +26,7 @@ import com.milov.fat.Animation.HomeAnim;
 import com.milov.fat.R;
 import com.milov.fat.view.ActionBarLayout;
 import com.milov.fat.view.HomeCurveView;
+import com.milov.fat.view.MissionProgressView;
 
 /**
  * Created by Milov on 2015/8/22.
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
     public Handler handler;
     public HomeAnim homeAnim;
     public HomeCurveView curveView;
+    public MissionProgressView progressView;
     private ActionBarLayout recipeBar;
     private float startX,startY;
     private boolean hasCancle,isHome;
@@ -173,6 +175,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         breakfastText = (TextView) view.findViewById(R.id.breakfast_text);
         lunchText = (TextView) view.findViewById(R.id.lunch_text);
         supperText = (TextView) view.findViewById(R.id.supper_text);
+        progressView = (MissionProgressView) view.findViewById(R.id.mission_progress);
     }
     /**
      * 初始化事件
