@@ -34,7 +34,7 @@ import com.milov.fat.view.MissionProgressView;
 public class HomeFragment extends Fragment implements OnClickListener,View.OnTouchListener {
     private PercentRelativeLayout view;
     private TextView personalText,missionText,recipeText,breakfastText,lunchText,supperText;
-    public TextView circleText,deviceStatusText,openAppText,openAppButton,calStillText,unitText,failedText,calText,stepText;
+    public TextView circleText,deviceStatusText,openAppText,openAppButton,calStillText,unitText,failedText,calText,stepText,noMission;
     public LinearLayout manBar,breakfastLayout,lunchLayout,supperLayout,morningTitle,noonTitle,afternoonTitle;
     public RelativeLayout bottomLayout;
     public Handler handler;
@@ -176,6 +176,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         lunchText = (TextView) view.findViewById(R.id.lunch_text);
         supperText = (TextView) view.findViewById(R.id.supper_text);
         progressView = (MissionProgressView) view.findViewById(R.id.mission_progress);
+        noMission = (TextView) view.findViewById(R.id.home_no_mission_text);
     }
     /**
      * 初始化事件

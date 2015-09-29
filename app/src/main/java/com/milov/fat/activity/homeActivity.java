@@ -79,7 +79,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         //Activity在旋屏或从后台切回时有时会重新启动，这时原有的Fragment也会重启，同时又会执行一遍onCreat
         //原来的Fragment会存储在savedInstanceState里，为了避免过多的Fragment产生，这里执行一次判断
         //一次启动程序，或者启动后还未设置个人信息时，打开firstSetFragment
-        if(savedInstanceState == null && dataManager.getSelfData(DataManager.GENDER)!=0){
+        if(savedInstanceState == null && dataManager.getSelfData(DataManager.GENDER)==0){
             firsrSetFragment = new FirstSetFragment();
             fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -226,6 +226,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 fragmentTransaction.show(homeFragment);
                 fragmentTransaction.commit();
                 break;
+            //刷新
+            case R.id.add_mission_button:
+            case R.id.reset_mission_button:
+            case R.id.delete_mission_button:
+                refresh();
+                break;
         }
     }
 
@@ -300,6 +306,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         }
         if(calorie>=dataManager.getMissonData(DataManager.DAILY_GOAL)){
             //showSuccess
+            Toast.makeText(this,"今日任务达标",Toast.LENGTH_SHORT).show();
         }
         else
             homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL)-calorie + "");
@@ -379,7 +386,13 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             homeFragment.calStillText.setVisibility(View.VISIBLE);
             homeFragment.unitText.setVisibility(View.VISIBLE);
             homeFragment.manBar.setVisibility(View.VISIBLE);
-            homeFragment.progressView.setVisibility(View.VISIBLE);
+            if(dataManager.getSelfData(DataManager.GOAL)!=-2){
+                homeFragment.progressView.setVisibility(View.VISIBLE);
+                homeFragment.noMission.setVisibility(View.GONE);
+            } else {
+                homeFragment.progressView.setVisibility(View.GONE);
+                homeFragment.noMission.setVisibility(View.VISIBLE);
+            }
         } else {
             homeFragment.calStillText.setVisibility(View.GONE);
             homeFragment.unitText.setVisibility(View.GONE);
@@ -443,12 +456,20 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 加载任务进度条
      */
     private void loadMissionProgress(){
-        new Thread(){
-            @Override
-            public void run(){
-                huawei.getMissionProgress();
-            }
-        }.start();
+        //-2表示任务已经被删除
+        if(dataManager.getSelfData(DataManager.GOAL)!=-2){
+            homeFragment.progressView.setVisibility(View.VISIBLE);
+            huawei.getMissionProgress();
+            new Thread(){
+                @Override
+                public void run(){
+                    huawei.getMissionProgress();
+                }
+            }.start();
+        }
+        else {
+            homeFragment.progressView.setVisibility(View.GONE);
+        }
     }
 
     /**

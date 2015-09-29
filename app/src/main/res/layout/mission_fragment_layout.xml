@@ -149,10 +149,24 @@
         android:layout_below="@id/mission_info"
         android:gravity="center"
         android:textSize="17dp"
+        android:layout_marginTop="20dp"
         android:text="根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗达标值为xxx千卡"
         />
 
+    <TextView
+        android:id="@+id/no_mission"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/mission_actionBar"
+        android:layout_above="@+id/button_layout"
+        android:background="@android:color/white"
+        android:text="无任务"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:visibility="gone"/>
+
     <RelativeLayout
+        android:id="@+id/button_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
@@ -183,7 +197,18 @@
             android:layout_marginTop="20dp"
             android:layout_below="@id/delete_mission_button"
             android:textColor="@color/red"
-            android:background="@android:color/white"/>
-
+            android:background="@android:color/white"
+            />
+        <Button
+            android:id="@+id/add_mission_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="添加任务"
+            android:textSize="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/red"
+            android:background="@android:color/white"
+            android:visibility="gone"/>
     </RelativeLayout>
 </android.support.percent.PercentRelativeLayout>
