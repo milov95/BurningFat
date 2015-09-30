@@ -10,10 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import com.huawei.huaweiwearable.constant.DeviceConnectionState;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
 import com.huawei.huaweiwearable.data.DataTotalMotion;
@@ -118,10 +118,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (huawei.manager != null) {
-                    homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
-                    loadMissionProgress();
-                }
                 refresh();
             }
         }, 500);
@@ -133,11 +129,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             case R.id.first_set_start:
                 //进入HomeFragment
                 homeFragment = new HomeFragment();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.home_content,homeFragment);
-                fragmentTransaction.commit();
-                firsrSetFragment=null;
+                fragmentManager.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.home_content, homeFragment)
+                        .commit();
 
+                firsrSetFragment=null;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -165,8 +162,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 if(personalFragment == null){
                     personalFragment = new PersonalFragment();
                 }
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                fragmentTransaction.add(R.id.home_content, personalFragment, null);
                 fragmentTransaction.hide(homeFragment);
-                fragmentTransaction.add(R.id.home_content,personalFragment,null);
                 fragmentTransaction.addToBackStack(null);
                 loadLineChart();
                 break;
@@ -180,8 +178,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 if(missionFragment == null){
                     missionFragment = new MissionFragment();
                 }
-                fragmentTransaction.hide(homeFragment);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fragmentTransaction.add(R.id.home_content, missionFragment, null);
+                fragmentTransaction.hide(homeFragment);
                 fragmentTransaction.addToBackStack(null);
                 break;
             //打开华为穿戴APP
@@ -208,10 +207,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         switch (view.getId()){
             //回到HomeFragment
             case R.id.back_personal_image:
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.remove(personalFragment);
-                fragmentTransaction.show(homeFragment);
-                fragmentTransaction.commit();
+                fragmentManager
+                        .beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                        .remove(personalFragment)
+                        .show(homeFragment)
+                        .commit();
                 break;
         }
     }
@@ -221,10 +222,12 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         switch (view.getId()){
             //回到HomeFragment
             case R.id.back_mission_image:
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.remove(missionFragment);
-                fragmentTransaction.show(homeFragment);
-                fragmentTransaction.commit();
+                fragmentManager
+                        .beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                        .remove(missionFragment)
+                        .show(homeFragment)
+                        .commit();
                 break;
             //刷新
             case R.id.add_mission_button:
@@ -271,6 +274,8 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
                                         personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
+                                        personalFragment.statusAnim.stop();
+                                        personalFragment.status.setVisibility(View.INVISIBLE);
                                     }
                                 } else {
                                     //读取设备的健康数据
@@ -279,9 +284,15 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
                                         personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
+                                        personalFragment.statusAnim.stop();
+                                        personalFragment.status.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             }
+                            break;
+                        case HuaweiWearableHelper.MISSION_DATA:
+                            Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
+                            homeFragment.rotateAnim.cancel();
                             break;
                         case HuaweiWearableHelper.USER_INFO:
                             break;
@@ -312,7 +323,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL)-calorie + "");
         homeFragment.stepText.setText(steps + " 步");
         homeFragment.calText.setText(calorie + " 千卡");
-        Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -424,32 +434,33 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             showOpenApp(true);
             showTodayHealthData(false);
         } else if (huawei.getDeviceStatus() != DeviceConnectionState.DEVICE_CONNECTED) {
-            if (huawei.getDeviceStatus() == DeviceConnectionState.DEVICE_CONNECT_FAILED) {
-                showFailed(true);
-                showOpenApp(false);
-                showTodayHealthData(false);
-            } else {
                 showFailed(false);
                 showOpenApp(true);
                 showTodayHealthData(false);
-            }
         } else {
             showFailed(false);
             showOpenApp(false);
             showTodayHealthData(true);
             huawei.getTodayHealthData();
+            loadMissionProgress();
+            homeFragment.refreshImage.startAnimation(homeFragment.rotateAnim);
         }
     }
     /**
      * 配置PersonFragment里的折线图
      */
     private void loadLineChart(){
-        new Thread(){
+        new Thread(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
                 huawei.getMonthHealthData();
             }
-        }.start();
+        }).start();
     }
 
     /**
@@ -459,7 +470,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         //-2表示任务已经被删除
         if(dataManager.getSelfData(DataManager.GOAL)!=-2){
             homeFragment.progressView.setVisibility(View.VISIBLE);
-            huawei.getMissionProgress();
             new Thread(){
                 @Override
                 public void run(){

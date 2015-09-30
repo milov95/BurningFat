@@ -63,6 +63,10 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      */
     public static final int TIME_HEALTH = 3;
     /**
+     * 获得任务数据完成标识
+     */
+    public static final int MISSION_DATA = 4;
+    /**
      * 是否在读取月数据，用于控制manager在读取成功一个之后再读取下一个
      */
     public boolean gettingTimeHealth = false;
@@ -217,7 +221,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         for(int i = 0;i<list.size()-1;i++){
             final int j = i;
             final String date = list.get(i+1);
-            while (gettingTimeHealth) Log.i("getting","getting");
+            while (gettingTimeHealth) Log.i("getting", "getting");
             if(dataManager.getMonthData(date)!=-1 && dataManager.getMonthData(date)>=dataManager.getSelfData(DataManager.DAILY_GOAL) ){
                 dataManager.addReachDays();
                 Log.i("onSucess", "任务达标天数+1" + dataManager.getMonthData(date) );
@@ -236,7 +240,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
                     dataManager.saveMonthData(date, cal);
                     if(cal>=dataManager.getSelfData(DataManager.DAILY_GOAL))
                         dataManager.addReachDays();
-                    Log.i("onSucess", "任务达标天数+1" + cal);
+                    Log.i("onSucess", "任务达标天数+1 " + cal);
                     gettingTimeHealth = false;
                 }
 
@@ -249,7 +253,9 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             gettingTimeHealth = true;
         }
         //获取任务进度数据完毕，通知绘制
-        Log.i("获取任务达标天数","获取完毕");
+        Log.i("获取任务达标天数", "获取完毕");
+        Message msg = handler.obtainMessage(MISSION_DATA);
+        handler.handleMessage(msg);
     }
 
     /**

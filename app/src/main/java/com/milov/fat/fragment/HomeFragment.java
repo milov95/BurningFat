@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -46,6 +48,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
     private boolean hasCancle,isHome;
     public ImageView shareImage,refreshImage;
     private LayoutTransition disApperTransition,apperTransition;
+    public Animation rotateAnim;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -177,6 +180,8 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         supperText = (TextView) view.findViewById(R.id.supper_text);
         progressView = (MissionProgressView) view.findViewById(R.id.mission_progress);
         noMission = (TextView) view.findViewById(R.id.home_no_mission_text);
+
+        rotateAnim = AnimationUtils.loadAnimation(getActivity(),R.anim.rotate_anim);
     }
     /**
      * 初始化事件

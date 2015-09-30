@@ -1,5 +1,7 @@
 package com.milov.fat.fragment;
 
+import android.graphics.drawable.AnimationDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
@@ -27,6 +29,8 @@ public class PersonalFragment extends Fragment implements OnClickListener{
     private ImageView back;
     public LineChartView chartView;
     private DataManager dataManager;
+    public ImageView status;
+    public AnimationDrawable statusAnim;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -35,7 +39,8 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         View view = inflater.inflate(R.layout.personal_fragment_layout,container,false);
         initView(view);
         showInfo();
-
+        status.setVisibility(View.VISIBLE);
+        statusAnim.start();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -63,6 +68,9 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         gender = (TextView) view.findViewById(R.id.person_gender);
         averageCal = (TextView) view.findViewById(R.id.average_cal);
         assess = (TextView) view.findViewById(R.id.person_assess);
+        status = (ImageView) view.findViewById(R.id.status_image);
+        status.setImageResource(R.drawable.status_anim);
+        statusAnim =(AnimationDrawable) status.getDrawable();
     }
 
     private void showInfo(){

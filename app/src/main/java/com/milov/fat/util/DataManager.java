@@ -158,6 +158,7 @@ public class DataManager {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
 
+        missionDataEditor.putInt("reachDays",0);
         missionDataEditor.putInt("startDayOfYear",c.get(Calendar.DAY_OF_YEAR));
         int goal = selfDataSP.getInt("goal",0);
         int period;
@@ -176,7 +177,7 @@ public class DataManager {
 
     private int calculateDailyGoal(int period,int goal,int age){
 
-        return 1;
+        return 620;
     }
 
     /**
