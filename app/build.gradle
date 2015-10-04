@@ -32,5 +32,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:percent:22.2.0'
     compile files('libs/HuaweiWearableJar_V1.0.0.jar')
+    compile files('libs/jxl.jar')
 }
 

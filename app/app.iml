@@ -92,6 +92,7 @@
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="HuaweiWearableJar_V1.0.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
+    <orderEntry type="library" exported="" name="jxl" level="project" />
     <orderEntry type="library" exported="" name="percent-22.2.0" level="project" />
   </component>
 </module>

@@ -3,8 +3,11 @@ package com.milov.fat.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
+import jxl.*;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -17,7 +20,7 @@ public class DataManager {
     public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,
             DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20,AGE = 21,
             BREAKFAST = 22,LUNCH = 23,SUPPER = 24;
-
+    private Context context;
     /**
      * 用于获取应用数据
      */
@@ -40,8 +43,9 @@ public class DataManager {
         monthDataEditor = monthDataSP.edit();
         selfDataSP = context.getSharedPreferences("selfInfo", Activity.MODE_PRIVATE);
         selfDataEditor = selfDataSP.edit();
-        missionDataSP = context.getSharedPreferences("missionData",Activity.MODE_PRIVATE);
+        missionDataSP = context.getSharedPreferences("missionData", Activity.MODE_PRIVATE);
         missionDataEditor = missionDataSP.edit();
+        this.context=context;
 
         initSelfInfoInterval();
     }
@@ -175,9 +179,33 @@ public class DataManager {
         missionDataEditor.commit();
     }
 
+
     private int calculateDailyGoal(int period,int goal,int age){
 
         return 620;
+    }
+
+    public int getBaseConsumptionValue(int age,int gender,int height,int weight){
+        int value = 0,delta = 0;
+        try {
+            Workbook book = Workbook.getWorkbook(new File(context.getFilesDir().getPath()+"/consumption_sheet.xls"));
+            System.out.println(">>>>>>number of sheet " + book.getNumberOfSheets());
+            //根据性别获取表格
+            Sheet sheet = gender==DataManager.MALE ? book.getSheet(0) : book.getSheet(1);
+            delta = gender==DataManager.MALE ? 82 : 56 ;
+            int row = (weight-23)/5+1;
+            int col = (height-50)/10+1;
+            System.out.println("当前工作表的名字:" + sheet.getName());
+            System.out.println("行:" + (row+1));
+            System.out.println("列:" + (col+1));
+            value = Integer.parseInt(sheet.getCell(col, row).getContents())-((age-10)/10)*delta;
+            System.out.print((sheet.getCell(row, col)).getContents() + "\t");
+            book.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return value;
     }
 
     /**

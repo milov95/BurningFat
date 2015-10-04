@@ -445,6 +445,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             loadMissionProgress();
             homeFragment.refreshImage.startAnimation(homeFragment.rotateAnim);
         }
+        Log.i("value",dataManager.getBaseConsumptionValue(19, DataManager.MALE, 183, 75)+"");
     }
     /**
      * 配置PersonFragment里的折线图
