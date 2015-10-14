@@ -218,29 +218,33 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
      */
     public void getMissionProgress(){
         ArrayList<String> list = getMissionEachDayTime();
+        dataManager.cleanReachDays();
         for(int i = 0;i<list.size()-1;i++){
             final int j = i;
             final String date = list.get(i+1);
             while (gettingTimeHealth) Log.i("getting", "getting");
-            if(dataManager.getMonthData(date)!=-1 && dataManager.getMonthData(date)>=dataManager.getSelfData(DataManager.DAILY_GOAL) ){
-                dataManager.addReachDays();
-                Log.i("onSucess", "任务达标天数+1" + dataManager.getMonthData(date) );
+            if(dataManager.getMonthData(date)!=-1){
+                if( dataManager.getMonthData(date)/1000>=dataManager.getMissonData(DataManager.DAILY_GOAL)) {
+                    dataManager.addReachDays();
+                    Log.i("onSucess", "任务达标天数+1 " + dataManager.getMonthData(date) / 1000);
+                }
                 continue;
             }
-            manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {
+            manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i + 1), list.get(i), new IResultReportCallback() {
                 @Override
                 public void onSuccess(Object object) {
                     //得到数据
                     DataHealthData data = (DataHealthData) object;
                     ArrayList<DataRawSportData> dataList = (ArrayList<DataRawSportData>) data.getDataRawSportDatas();
                     int cal = 0;
-                    if(dataList.size()!=0)
-                        cal = dataList.get(dataList.size()-1).getTotalCalorie();
+                    if (dataList.size() != 0)
+                        cal = dataList.get(dataList.size() - 1).getTotalCalorie();
                     //存储
                     dataManager.saveMonthData(date, cal);
-                    if(cal>=dataManager.getSelfData(DataManager.DAILY_GOAL))
+                    if (cal / 1000 >= dataManager.getMissonData(DataManager.DAILY_GOAL)) {
                         dataManager.addReachDays();
-                    Log.i("onSucess", "任务达标天数+1 " + cal);
+                        Log.i("onSucess", "任务达标天数+1 " + dataManager.getMonthData(date) / 1000);
+                    }
                     gettingTimeHealth = false;
                 }
 

@@ -7,12 +7,19 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 import com.huawei.huaweiwearable.constant.DeviceConnectionState;
 import com.huawei.huaweiwearable.data.DataTodayTotalMotion;
@@ -23,8 +30,18 @@ import com.milov.fat.fragment.HomeFragment;
 import com.milov.fat.fragment.MissionFragment;
 import com.milov.fat.fragment.PersonalFragment;
 import com.milov.fat.util.DataManager;
+import com.milov.fat.util.DisplayUtil;
 import com.milov.fat.util.HuaweiWearableHelper;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXImageObject;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
+import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class HomeActivity extends Activity implements HomeFragment.HomeFragClickListener,
@@ -63,11 +80,20 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 数据管理器
      */
     private DataManager dataManager;
+    /**
+     * 微信开放平台注册的该应用的ID
+     */
+    private static final String APP_ID = "wx4b19dc736e58e5e7" ;
+    /**
+     * 微信openAPI接口
+     */
+    private IWXAPI api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity_layout);
+        regToWeChat();
 
         dataManager = DataManager.getInstance(getApplicationContext());
         handler = new MyHandler();
@@ -197,6 +223,22 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                     Toast.makeText(getApplicationContext(),"请确保手环正常连接",Toast.LENGTH_SHORT).show();
                 }
                 refresh();
+                break;
+            case R.id.share_image:
+                if(api!=null){
+                    if(api.isWXAppInstalled()){
+                        if(api.isWXAppSupportAPI()){
+                            shareToWeChat("正在测试BurningFat朋友圈分享接口");
+                        } else {
+                            Toast.makeText(this,"微信版本太低，无法分享倒朋友圈",Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this,"您还未安装微信，无法分享到朋友圈",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this,"注册api失败",Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
         fragmentTransaction.commit();
 
@@ -255,7 +297,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 public void run() {
                     switch (msg.what) {
                         case HuaweiWearableHelper.CONNECTION_STATUS:
-                            showChangedStatus(msg.obj);
+                            //showChangedStatus(msg.obj);
                             break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
                             if (msg.obj == null) /*失败*/ ;
@@ -273,7 +315,13 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                     personalFragment.chartView.loadHealthData(msg.arg1, (int) msg.obj);
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
-                                        personalFragment.averageCal.setText(dataManager.getAverageCal()/1000+"千卡");
+                                        personalFragment.averageCal.setText(dataManager.getAverageCal() / 1000 + "千卡");
+                                        if(dataManager.getAverageCal()/1000>800)
+                                            personalFragment.assess.setText("健康");
+                                        else if (dataManager.getAverageCal()/1000>400)
+                                            personalFragment.assess.setText("一般");
+                                        else
+                                            personalFragment.assess.setText("缺乏锻炼");
                                         personalFragment.statusAnim.stop();
                                         personalFragment.status.setVisibility(View.INVISIBLE);
                                     }
@@ -293,6 +341,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                         case HuaweiWearableHelper.MISSION_DATA:
                             Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
                             homeFragment.rotateAnim.cancel();
+
                             break;
                         case HuaweiWearableHelper.USER_INFO:
                             break;
@@ -316,51 +365,55 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             }
         }
         if(calorie>=dataManager.getMissonData(DataManager.DAILY_GOAL)){
-            //showSuccess
-            Toast.makeText(this,"今日任务达标",Toast.LENGTH_SHORT).show();
+            homeFragment.completeLayout.setVisibility(View.VISIBLE);
+            homeFragment.calStillText.setVisibility(View.GONE);
+            homeFragment.unitText.setVisibility(View.GONE);
         }
-        else
-            homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL)-calorie + "");
+        else{
+            homeFragment.completeLayout.setVisibility(View.GONE);
+            homeFragment.calStillText.setText(dataManager.getMissonData(DataManager.DAILY_GOAL) - calorie + "");
+            homeFragment.unitText.setVisibility(View.VISIBLE);
+        }
         homeFragment.stepText.setText(steps + " 步");
         homeFragment.calText.setText(calorie + " 千卡");
     }
 
-    /**
-     * （handler内使用）设备连接状态改变时调用
-     * @param obj 存储DeviceConnectionState
-     */
-    private void showChangedStatus(Object obj){
-        int status = (int) obj;
-        switch (status){
-            case DeviceConnectionState.DEVICE_CONNECTED:
-                homeFragment.deviceStatusText.setText("设备已连接");
-                huawei.getTodayHealthData();
-                showFailed(false);
-                showOpenApp(false);
-                showTodayHealthData(true);
-                break;
-            case DeviceConnectionState.DEVICE_CONNECT_FAILED:
-                homeFragment.deviceStatusText.setText("设备连接失败");
-                showFailed(true);
-                showOpenApp(false);
-                showTodayHealthData(false);
-                break;
-            case DeviceConnectionState.DEVICE_CONNECTING:
-                homeFragment.deviceStatusText.setText("正在连接");
-                Toast.makeText(getApplicationContext(),"正在连接...",Toast.LENGTH_SHORT).show();
-                break;
-            case DeviceConnectionState.DEVICE_DISCONNECTED:
-                homeFragment.deviceStatusText.setText("设备未连接");
-                showFailed(false);
-                showOpenApp(true);
-                showTodayHealthData(false);
-                break;
-            case DeviceConnectionState.DEVICE_DISCONNECTING:
-                homeFragment.deviceStatusText.setText("正在断开连接");
-                Toast.makeText(getApplicationContext(), "正在断开连接...", Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
+//    /**
+//     * （handler内使用）设备连接状态改变时调用
+//     * @param obj 存储DeviceConnectionState
+//     */
+//    private void showChangedStatus(Object obj){
+//        int status = (int) obj;
+//        switch (status){
+//            case DeviceConnectionState.DEVICE_CONNECTED:
+//                homeFragment.deviceStatusText.setText("设备已连接");
+//                huawei.getTodayHealthData();
+//                showFailed(false);
+//                showOpenApp(false);
+//                showTodayHealthData(true);
+//                break;
+//            case DeviceConnectionState.DEVICE_CONNECT_FAILED:
+//                homeFragment.deviceStatusText.setText("设备连接失败");
+//                showFailed(true);
+//                showOpenApp(false);
+//                showTodayHealthData(false);
+//                break;
+//            case DeviceConnectionState.DEVICE_CONNECTING:
+//                homeFragment.deviceStatusText.setText("正在连接");
+//                Toast.makeText(getApplicationContext(),"正在连接...",Toast.LENGTH_SHORT).show();
+//                break;
+//            case DeviceConnectionState.DEVICE_DISCONNECTED:
+//                homeFragment.deviceStatusText.setText("设备未连接");
+//                showFailed(false);
+//                showOpenApp(true);
+//                showTodayHealthData(false);
+//                break;
+//            case DeviceConnectionState.DEVICE_DISCONNECTING:
+//                homeFragment.deviceStatusText.setText("正在断开连接");
+//                Toast.makeText(getApplicationContext(), "正在断开连接...", Toast.LENGTH_SHORT).show();
+//                break;
+//        }
+//    }
 
     /**
      * 显示连接失败的提示
@@ -408,8 +461,11 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             homeFragment.unitText.setVisibility(View.GONE);
             homeFragment.manBar.setVisibility(View.GONE);
             homeFragment.progressView.setVisibility(View.GONE);
+            homeFragment.completeLayout.setVisibility(View.GONE);
         }
+
     }
+
 
     /**
      * 打开华为穿戴APP
@@ -429,6 +485,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 刷新
      */
     public void refresh(){
+        dataManager.getRecipeData(DataManager.LUNCH, DataManager.CAL);
         if(huawei.manager==null){
             showFailed(false);
             showOpenApp(true);
@@ -444,8 +501,8 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
             huawei.getTodayHealthData();
             loadMissionProgress();
             homeFragment.refreshImage.startAnimation(homeFragment.rotateAnim);
+
         }
-        Log.i("value",dataManager.getBaseConsumptionValue(19, DataManager.MALE, 183, 75)+"");
     }
     /**
      * 配置PersonFragment里的折线图
@@ -481,6 +538,104 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         else {
             homeFragment.progressView.setVisibility(View.GONE);
         }
+    }
+
+    public void regToWeChat(){
+        api = WXAPIFactory.createWXAPI(this,APP_ID,false);
+        api.registerApp(APP_ID);
+    }
+
+    private void shareToWeChat(String text){
+
+        String s = "0";
+        if(homeFragment.calText.getText().length()>3) {
+            s = (String) homeFragment.calText.getText().subSequence(0,homeFragment.calText.getText().length() - 3);
+        }
+
+        int deltaCal = Integer.parseInt(s) - dataManager.getNormalCal();
+
+
+        int remainDays =dataManager.getMissonData(DataManager.PERIOD)- dataManager.getMissonData(DataManager.COMPLETE_DAYS);
+
+        Bitmap pic =  deltaCal > 0
+                ? BitmapFactory.decodeResource(getResources(), R.drawable.shared_more)
+                : BitmapFactory.decodeResource(getResources(), R.drawable.shared_less);
+
+        Bitmap sharedPic = drawTextToBitmap(pic,String.valueOf(deltaCal) ,String.valueOf(remainDays));
+
+        Bitmap thumbPic = Bitmap.createScaledBitmap(sharedPic, 150, 150, true);
+
+        WXImageObject imageObject = new WXImageObject(sharedPic);
+
+        WXMediaMessage msg = new WXMediaMessage();
+        msg.mediaObject = imageObject;
+        msg.thumbData = bmpToByteArray(thumbPic);
+        msg.description = text;
+        msg.title = text;
+
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis());
+        req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        req.message = msg;
+
+        api.sendReq(req);
+    }
+
+    private Bitmap drawTextToBitmap(Bitmap bm,String gText,String gText2) {
+        float scale = DisplayUtil.getScale(getApplicationContext());
+
+        android.graphics.Bitmap.Config bitmapConfig = bm.getConfig();
+        // set default bitmap config if none
+        if(bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        // resource bitmaps are imutable,
+        // so we need to convert it to mutable one
+        Bitmap bitmap = bm.copy(bitmapConfig, true);
+
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        Paint paint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint1.setColor(getResources().getColor(R.color.share_green));
+        paint1.setTextSize((int) (28 * scale));
+        paint2.setColor(getResources().getColor(R.color.share_green));
+        paint2.setTextSize((int) (28 * scale));
+
+        Rect bounds1 = new Rect();
+        paint1.getTextBounds(gText, 0, gText.length(), bounds1);
+        Rect bounds2 = new Rect();
+        paint2.getTextBounds(gText2, 0, gText2.length(), bounds2);
+
+
+        int x1 = (int)(bitmap.getWidth()*0.638375 - bounds1.width()/2);
+        int y1 = (int)(bitmap.getHeight()*0.52185  + bounds1.height()/2);
+
+        int x2 = (int)(bitmap.getWidth()*0.64335 - bounds2.width()/2);
+        int y2 = (int)(bitmap.getHeight()*0.5853375 + bounds2.height()/2);
+
+        canvas.drawText(gText, x1 , y1 , paint1);
+        canvas.drawText(gText2, x2 , y2 , paint2);
+
+        return bitmap;
+    }
+
+    /**
+     * 得到Bitmap的byte
+     * @author YOLANDA
+     * @param bmp
+     * @return
+     */
+    private static byte[] bmpToByteArray(Bitmap bmp) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, output);
+
+        byte[] result = output.toByteArray();
+        try {
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.milov.fat.fragment;
 
 
-import android.animation.AnimatorInflater;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -17,14 +16,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.milov.fat.Animation.HomeAnim;
+import com.milov.fat.animation.HomeAnim;
 import com.milov.fat.R;
 import com.milov.fat.view.ActionBarLayout;
 import com.milov.fat.view.HomeCurveView;
@@ -37,7 +35,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
     private PercentRelativeLayout view;
     private TextView personalText,missionText,recipeText,breakfastText,lunchText,supperText;
     public TextView circleText,deviceStatusText,openAppText,openAppButton,calStillText,unitText,failedText,calText,stepText,noMission;
-    public LinearLayout manBar,breakfastLayout,lunchLayout,supperLayout,morningTitle,noonTitle,afternoonTitle;
+    public LinearLayout manBar,breakfastLayout,lunchLayout,supperLayout,morningTitle,noonTitle,afternoonTitle,completeLayout;
     public RelativeLayout bottomLayout;
     public Handler handler;
     public HomeAnim homeAnim;
@@ -180,7 +178,8 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         supperText = (TextView) view.findViewById(R.id.supper_text);
         progressView = (MissionProgressView) view.findViewById(R.id.mission_progress);
         noMission = (TextView) view.findViewById(R.id.home_no_mission_text);
-
+        completeLayout = (LinearLayout) view.findViewById(R.id.home_complete_layout);
+        shareImage = (ImageView) view.findViewById(R.id.share_image);
         rotateAnim = AnimationUtils.loadAnimation(getActivity(),R.anim.rotate_anim);
     }
     /**
@@ -191,6 +190,7 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         missionText.setOnClickListener(this);
         openAppButton.setOnClickListener(this);
         refreshImage.setOnClickListener(this);
+        shareImage.setOnClickListener(this);
         circleText.setOnTouchListener(this);
         curveView.setOnTouchListener(new backTouchListener());
     }

@@ -3,11 +3,13 @@ package com.milov.fat.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
 import jxl.*;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,7 +21,7 @@ public class DataManager {
     public static final int MALE = 1, FEMALE = 2;
     public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,
             DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20,AGE = 21,
-            BREAKFAST = 22,LUNCH = 23,SUPPER = 24;
+            BREAKFAST = 22,LUNCH = 23,SUPPER = 24,RECIPE = 25,CAL = 26,SCIENCE = 27,NORMAL_CAL = 28;
     private Context context;
     /**
      * 用于获取应用数据
@@ -186,26 +188,107 @@ public class DataManager {
     }
 
     public int getBaseConsumptionValue(int age,int gender,int height,int weight){
-        int value = 0,delta = 0;
+        int baseValue = 0, normalValue=0 ,baseDelta = 0,normalDelta = 0;
         try {
-            Workbook book = Workbook.getWorkbook(new File(context.getFilesDir().getPath()+"/consumption_sheet.xls"));
+            InputStream in = context.getAssets().open("consumption_sheet.xls");
+            Workbook book = Workbook.getWorkbook(in);
             System.out.println(">>>>>>number of sheet " + book.getNumberOfSheets());
+
             //根据性别获取表格
-            Sheet sheet = gender==DataManager.MALE ? book.getSheet(0) : book.getSheet(1);
-            delta = gender==DataManager.MALE ? 82 : 56 ;
+            Sheet baseSheet = gender==DataManager.MALE ? book.getSheet(0) : book.getSheet(1);
+            Sheet normalSheet = gender==DataManager.MALE ? book.getSheet(2) : book.getSheet(3) ;
+
+            baseDelta = gender==DataManager.MALE ? 82 : 56 ;
+            baseDelta = gender==DataManager.MALE ? 86 : 65 ;
+
             int row = (weight-23)/5+1;
             int col = (height-50)/10+1;
-            System.out.println("当前工作表的名字:" + sheet.getName());
+
+            System.out.println("当前工作表1的名字:" + baseSheet.getName());
+            System.out.println("当前工作表2的名字:" + normalSheet.getName());
             System.out.println("行:" + (row+1));
             System.out.println("列:" + (col+1));
-            value = Integer.parseInt(sheet.getCell(col, row).getContents())-((age-10)/10)*delta;
-            System.out.print((sheet.getCell(row, col)).getContents() + "\t");
+
+            //sheet.get(列，行);
+            baseValue = Integer.parseInt(baseSheet.getCell(col, row).getContents())-((age-10)/10)*baseDelta;
+            normalValue = Integer.parseInt(baseSheet.getCell(col, row).getContents())-((age-10)/10)*normalDelta;
+
+            selfDataEditor.putInt("normalCal",normalValue);
+            selfDataEditor.commit();
+
+            System.out.print((baseSheet.getCell(col, row)).getContents() + "基础消耗\t");
             book.close();
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        return value;
+        return baseValue;
+    }
+
+    public int getNormalCal(){
+        return selfDataSP.getInt("normalCal",0);
+    }
+
+    /**
+     * 获取食谱数据
+     * @param mealType BREAKFAST,LUNCH,SUPPER
+     * @param dataType RECIPE,CAL,SCIENCE
+     * @return 对应类型的String数据
+     */
+    public String getRecipeData(int mealType,int dataType){
+        String data = null;
+        int typeNum;
+        switch (mealType){
+            case BREAKFAST:
+                typeNum = 1;
+                break;
+            case LUNCH:
+                typeNum = 3;
+                break;
+            case SUPPER:
+                typeNum = 5;
+                break;
+            default:
+                typeNum = 1;
+                break;
+        }
+        int gender = getSelfData(GENDER);
+        int age = 10 + getSelfData(AGE);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        int version = c.get(Calendar.DAY_OF_YEAR) % 2;
+
+        try {
+            InputStream in = context.getAssets().open("recipes.xls");
+            Workbook book = Workbook.getWorkbook(in);
+            System.out.println(">>>>>>number of sheet " + book.getNumberOfSheets());
+
+            Sheet sheet = null ;
+            switch (dataType){
+                case RECIPE:
+                    sheet = gender==DataManager.MALE ? book.getSheet(2) : book.getSheet(1);
+                    break;
+                case CAL:
+                    sheet = gender==DataManager.MALE ? book.getSheet(4) : book.getSheet(3);
+                    break;
+                case SCIENCE:
+                    sheet = book.getSheet(5);
+                    break;
+            }
+            int row = age > 60 ? 6 : age/10;
+            int col = typeNum + version ;
+
+            System.out.println("当前工作表的名字:" + sheet.getName());
+            System.out.println("行:" + (row+1));
+            System.out.println("列:" + (col+1));
+            data = (sheet.getCell(col, row)).getContents();
+            System.out.println(data);
+            book.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return data;
     }
 
     /**
@@ -235,7 +318,10 @@ public class DataManager {
         }
     }
 
-
+    public void cleanReachDays(){
+        missionDataEditor.putInt("reachDays",0);
+        missionDataEditor.commit();
+    }
 
     public void addReachDays(){
         missionDataEditor.putInt("reachDays",missionDataSP.getInt("reachDays",0)+1);
@@ -269,13 +355,5 @@ public class DataManager {
         selfDataEditor.commit();
     }
 
-    /**
-     * 获取食谱
-     * @param type BREAKFAST,LUNCH,SUPPER
-     * @return 食谱信息
-     */
-    public String getRecipe(int type){
-        return "";
-    }
 }
 

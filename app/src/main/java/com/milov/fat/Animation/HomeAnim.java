@@ -1,10 +1,8 @@
-package com.milov.fat.Animation;
+package com.milov.fat.animation;
 
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;

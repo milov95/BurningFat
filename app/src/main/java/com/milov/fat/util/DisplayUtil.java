@@ -17,7 +17,7 @@ public class DisplayUtil {
     /**
      * 单一实例
      */
-    public static DisplayUtil displayUtil=null;
+    private static DisplayUtil displayUtil=null;
     /**
      * 屏幕宽(px)
      */
@@ -64,6 +64,12 @@ public class DisplayUtil {
         if(displayUtil==null)
             displayUtil = new DisplayUtil(context);
         return displayUtil;
+    }
+
+    public static float getScale(Context context){
+        if(displayUtil==null)
+            displayUtil = new DisplayUtil(context);
+        return scale;
     }
 
     private int getStatusBarHeight() {
