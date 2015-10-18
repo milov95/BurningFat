@@ -147,6 +147,14 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         });
     }
 
+    public void cleanMonthData(){
+        ArrayList<String> list = getMonthEachDayTime();
+        for(int i = 0;i<30;i++) {
+            String date = list.get(i + 1);
+            dataManager.cleanMonthData(date);
+        }
+    }
+
     /**
      * 获取上个月同一天开始的DataHealthData数组，共30个数据
      */
@@ -156,11 +164,11 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
             Log.i("get",i+"");
             final int j = i;
             final String date = list.get(i+1);
-            while (gettingTimeHealth) Log.i("getting","getting");
+            while (gettingTimeHealth) /*Log.i("getting","getting")*/;
             if(dataManager.getMonthData(date)!=-1){
                 Message msg = handler.obtainMessage(TIME_HEALTH, j, 1, dataManager.getMonthData(date));
                 handler.handleMessage(msg);
-                Log.i("onSucess", "获取指定时间段数据成功:" + dataManager.getMonthData(date) );
+                Log.i("onSucess", "读取指定时间段数据成功:" + dataManager.getMonthData(date) );
                 continue;
             }
             manager.getHealthDataByTime(DeviceType.HUAWEI_TALKBAND_B2, list.get(i+1),list.get(i), new IResultReportCallback() {

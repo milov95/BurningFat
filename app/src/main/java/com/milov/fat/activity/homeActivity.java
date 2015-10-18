@@ -32,6 +32,7 @@ import com.milov.fat.fragment.PersonalFragment;
 import com.milov.fat.util.DataManager;
 import com.milov.fat.util.DisplayUtil;
 import com.milov.fat.util.HuaweiWearableHelper;
+import com.milov.fat.view.MissionProgressView;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
@@ -153,6 +154,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
     public void onFirstSelfInfoSetFragClick(View view){
         switch (view.getId()){
             case R.id.first_set_start:
+                huawei.cleanMonthData();
                 //进入HomeFragment
                 homeFragment = new HomeFragment();
                 fragmentManager.beginTransaction()
@@ -165,7 +167,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                     @Override
                     public void run() {
                         if (huawei.manager != null) {
-                            homeFragment.deviceStatusText.setText(huawei.getDeviceStatus() + "");
                             loadMissionProgress();
                         }
                         refresh();
@@ -256,6 +257,15 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                         .show(homeFragment)
                         .commit();
                 break;
+            case R.id.reset_personal_text:
+                firsrSetFragment = new FirstSetFragment();
+                fragmentManager
+                        .beginTransaction()
+                        .remove(personalFragment)
+                        .remove(homeFragment)
+                        .add(R.id.home_content,firsrSetFragment,null)
+                        .commit();
+                break;
         }
     }
 
@@ -296,9 +306,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                 @Override
                 public void run() {
                     switch (msg.what) {
-                        case HuaweiWearableHelper.CONNECTION_STATUS:
-                            //showChangedStatus(msg.obj);
-                            break;
                         case HuaweiWearableHelper.TODAY_HEALTH:
                             if (msg.obj == null) /*失败*/ ;
                             else {
@@ -315,13 +322,15 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                                     personalFragment.chartView.loadHealthData(msg.arg1, (int) msg.obj);
                                     if (msg.arg1 == 29) {
                                         //读取月数据完毕
-                                        personalFragment.averageCal.setText(dataManager.getAverageCal() / 1000 + "千卡");
-                                        if(dataManager.getAverageCal()/1000>800)
-                                            personalFragment.assess.setText("健康");
-                                        else if (dataManager.getAverageCal()/1000>400)
-                                            personalFragment.assess.setText("一般");
+                                        int averageCal = dataManager.getAverageCal() / 1000;
+                                        personalFragment.averageCal.setText(averageCal + "千卡");
+                                        if(averageCal>800)
+                                            personalFragment.assess.setText("运动爱好者");
+                                        else if (averageCal>400)
+                                            personalFragment.assess.setText("表现平庸");
                                         else
                                             personalFragment.assess.setText("缺乏锻炼");
+                                        personalFragment.assess.invalidate();
                                         personalFragment.statusAnim.stop();
                                         personalFragment.status.setVisibility(View.INVISIBLE);
                                     }
@@ -340,6 +349,10 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
                             break;
                         case HuaweiWearableHelper.MISSION_DATA:
                             Toast.makeText(getApplicationContext(),"数据同步成功",Toast.LENGTH_SHORT).show();
+                            homeFragment.progressView.loadMissionData(
+                                    dataManager.getMissonData(DataManager.PERIOD)
+                                    , dataManager.getMissonData(DataManager.COMPLETE_DAYS)
+                                    , dataManager.getMissonData(DataManager.REACH_DAYS));
                             homeFragment.rotateAnim.cancel();
 
                             break;
@@ -485,7 +498,6 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
      * 刷新
      */
     public void refresh(){
-        dataManager.getRecipeData(DataManager.LUNCH, DataManager.CAL);
         if(huawei.manager==null){
             showFailed(false);
             showOpenApp(true);

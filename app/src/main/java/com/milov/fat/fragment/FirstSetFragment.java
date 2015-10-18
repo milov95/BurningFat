@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.milov.fat.R;
 import com.milov.fat.util.DataManager;
+import com.milov.fat.util.HuaweiWearableHelper;
 
 /**
  * Created by Milov on 2015/9/22.
@@ -26,6 +27,7 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
     AlertDialog pickerDialog;
     DataManager dataManager;
     TextView startText;
+    HuaweiWearableHelper helper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class FirstSetFragment extends Fragment implements View.OnClickListener {
                     dataManager.getSelfData(DataManager.WEIGHT),
                     dataManager.getSelfData(DataManager.GOAL));
             dataManager.startMisson();
+
 
             ((FirstSelfInfoSetFragClickListener) getActivity()).onFirstSelfInfoSetFragClick(v);
         } else {

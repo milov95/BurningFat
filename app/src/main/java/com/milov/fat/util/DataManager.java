@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
+
 import jxl.*;
 
 import java.io.File;
@@ -20,8 +22,8 @@ public class DataManager {
 
     public static final int MALE = 1, FEMALE = 2;
     public static final int GENDER = 10, HEIGHT = 11, WEIGHT = 12, GOAL = 13,PERIOD = 14,COMPLETE_DAYS = 15,
-            DAILY_GOAL = 16,REACH_DAYS = 17,TOTAL_CAL = 18,TOTAL_DAYS = 19,START_TIME = 20,AGE = 21,
-            BREAKFAST = 22,LUNCH = 23,SUPPER = 24,RECIPE = 25,CAL = 26,SCIENCE = 27,NORMAL_CAL = 28;
+            DAILY_GOAL = 16,REACH_DAYS = 17,START_TIME = 20,AGE = 21,
+            BREAKFAST = 22,LUNCH = 23,SUPPER = 24,RECIPE = 25,CAL = 26,SCIENCE = 27;
     private Context context;
     /**
      * 用于获取应用数据
@@ -157,34 +159,75 @@ public class DataManager {
         return monthDataSP.getInt(date,-1);
     }
 
+    public void cleanMonthData(String date){
+        monthDataEditor.putInt(date,-1);
+        monthDataEditor.commit();
+        return;
+    }
+
     /**
      * 设置任务
      */
     public void startMisson(){
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
+        cleanAverageCal();
 
         missionDataEditor.putInt("reachDays",0);
         missionDataEditor.putInt("startDayOfYear",c.get(Calendar.DAY_OF_YEAR));
-        int goal = selfDataSP.getInt("goal",0);
+        int goal = selfDataSP.getInt("goal",0)+1;
+        int gender = selfDataSP.getInt("gender",0);
+        int height = selfDataSP.getInt("height",0)+151;
+        int weight = selfDataSP.getInt("weight",0)+40;
         int period;
-        int daily;
-        if(selfDataSP.getInt("gender",0)==DataManager.MALE){
+        if(gender == DataManager.MALE){
             period = (goal+1)*10;
             missionDataEditor.putInt("period",period);
         } else {
             period = (goal+1)*15;
             missionDataEditor.putInt("period",period);
         }
-        daily = calculateDailyGoal(period,goal,selfDataSP.getInt("age",0));
+        int daily = calculateDailyGoal(period,goal,selfDataSP.getInt("age",0),gender,height,weight);
         missionDataEditor.putInt("dailyGoal",daily);
         missionDataEditor.commit();
+
+        Log.i("dailyGoal", daily+"");
+    }
+
+    /**
+     * 获取任务信息
+     * @param type 信息类型
+     * @return 对应的信息数据
+     */
+    public int getMissonData(int type){
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+
+        switch (type){
+            case START_TIME:
+                return missionDataSP.getInt("startDayOfYear",0);
+            case GOAL:
+                return selfDataSP.getInt("goal",0);
+            case PERIOD:
+                return missionDataSP.getInt("period",0);
+            case COMPLETE_DAYS:
+                return c.get(Calendar.DAY_OF_YEAR)-missionDataSP.getInt("startDayOfYear",0);
+            case REACH_DAYS:
+                return missionDataSP.getInt("reachDays",0);
+            case DAILY_GOAL:
+                return missionDataSP.getInt("dailyGoal",620);
+            default:
+                return -1;
+        }
     }
 
 
-    private int calculateDailyGoal(int period,int goal,int age){
+    private int calculateDailyGoal(int period,int goal,int age,int gender,int height,int weight){
 
-        return 620;
+        int eatCal = Integer.parseInt(getRecipeData(BREAKFAST, CAL));
+        int baseCal = getBaseConsumptionValue(age,gender,height,weight);
+
+        return ((goal * 7700)/period) + eatCal - baseCal ;
     }
 
     public int getBaseConsumptionValue(int age,int gender,int height,int weight){
@@ -278,7 +321,8 @@ public class DataManager {
             }
             int row = age > 60 ? 6 : age/10;
             int col = typeNum + version ;
-
+            if(dataType == CAL)
+                col = 7;
             System.out.println("当前工作表的名字:" + sheet.getName());
             System.out.println("行:" + (row+1));
             System.out.println("列:" + (col+1));
@@ -291,32 +335,6 @@ public class DataManager {
         return data;
     }
 
-    /**
-     * 获取任务信息
-     * @param type 信息类型
-     * @return 对应的信息数据
-     */
-    public int getMissonData(int type){
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-
-        switch (type){
-            case START_TIME:
-                return missionDataSP.getInt("startDayOfYear",0);
-            case GOAL:
-                return selfDataSP.getInt("goal",0);
-            case PERIOD:
-                return missionDataSP.getInt("period",0);
-            case COMPLETE_DAYS:
-                return c.get(Calendar.DAY_OF_YEAR)-missionDataSP.getInt("startDayOfYear",0);
-            case REACH_DAYS:
-                return missionDataSP.getInt("reachDays",0);
-            case DAILY_GOAL:
-                return missionDataSP.getInt("dailyGoal",620);
-            default:
-                return -1;
-        }
-    }
 
     public void cleanReachDays(){
         missionDataEditor.putInt("reachDays",0);
@@ -334,6 +352,12 @@ public class DataManager {
     public int getAverageCal(){
         if(selfDataSP.getInt("totalDays",0)==0) return 0;
         return selfDataSP.getInt("totalCal",0)/selfDataSP.getInt("totalDays",0);
+    }
+
+    public void cleanAverageCal(){
+        selfDataEditor.putInt("totalCal",0);
+        selfDataEditor.putInt("totalDays",0);
+        selfDataEditor.commit();
     }
 
     public int getTotalCal(){

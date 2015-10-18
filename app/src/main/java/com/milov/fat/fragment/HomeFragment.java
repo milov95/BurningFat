@@ -153,7 +153,6 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         personalText = (TextView) view.findViewById(R.id.personal_TextView);
         missionText = (TextView) view.findViewById(R.id.mission_TextView);
         circleText = (TextView) view.findViewById(R.id.circle_TextView);
-        deviceStatusText = (TextView) view.findViewById(R.id.test_device_state);
         openAppText = (TextView) view.findViewById(R.id.openApp_text);
         openAppButton = (Button) view.findViewById(R.id.openApp_button);
         calStillText = (TextView) view.findViewById(R.id.cal_still_text);

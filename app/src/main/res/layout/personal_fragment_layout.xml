@@ -35,6 +35,17 @@
 
     </com.milov.fat.view.ActionBarLayout>
 
+    <TextView
+        android:id="@+id/reset_personal_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="重置"
+        android:textSize="18dp"
+        android:textColor="@android:color/white"
+        android:layout_alignEnd="@id/personal_actionBar"
+        android:paddingEnd="17dp"
+        android:paddingTop="14dp"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="205dp"

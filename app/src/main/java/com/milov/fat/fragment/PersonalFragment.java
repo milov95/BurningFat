@@ -24,7 +24,7 @@ import com.milov.fat.view.LineChartView;
  */
 public class PersonalFragment extends Fragment implements OnClickListener{
     public TextView averageCal,assess;
-    private TextView height,weight,gender;
+    private TextView height,weight,gender,reset;
     private HorizontalScrollView scrollView;
     private ImageView back;
     public LineChartView chartView;
@@ -49,6 +49,7 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         },300);
 
         back.setOnClickListener(this);
+        reset.setOnClickListener(this);
         return view;
     }
 
@@ -68,6 +69,7 @@ public class PersonalFragment extends Fragment implements OnClickListener{
         gender = (TextView) view.findViewById(R.id.person_gender);
         averageCal = (TextView) view.findViewById(R.id.average_cal);
         assess = (TextView) view.findViewById(R.id.person_assess);
+        reset = (TextView) view.findViewById(R.id.reset_personal_text);
         status = (ImageView) view.findViewById(R.id.status_image);
         status.setImageResource(R.drawable.status_anim);
         statusAnim =(AnimationDrawable) status.getDrawable();

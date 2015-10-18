@@ -79,13 +79,13 @@ public class MissionProgressView extends View {
         canvas.drawRect(strokeWidth,strokeWidth,(length-strokeWidth)*(reachDays/totalDays),height,bluePaint);
         //画文字
         canvas.drawText(
-                "达标"+reachDays+"天 / 未达标"+(completeDays-reachDays)+"天 / 剩余"+(totalDays-completeDays)+"天",
+                "达标"+(int)reachDays+"天 / 未达标"+(int)(completeDays-reachDays)+"天 / 剩余"+(int)(totalDays-completeDays)+"天",
                 length/2,
                 height*2,
                 textPaint);
     }
 
-    private void loadMissionData(int totalDays,int completeDays,int reachDays){
+    public void loadMissionData(int totalDays,int completeDays,int reachDays){
         this.totalDays = totalDays;
         this.completeDays = completeDays;
         this.reachDays = reachDays;
