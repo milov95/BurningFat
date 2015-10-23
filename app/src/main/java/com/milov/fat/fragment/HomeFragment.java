@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.milov.fat.activity.HomeActivity;
 import com.milov.fat.animation.HomeAnim;
 import com.milov.fat.R;
 import com.milov.fat.view.ActionBarLayout;
@@ -33,18 +34,17 @@ import com.milov.fat.view.MissionProgressView;
  */
 public class HomeFragment extends Fragment implements OnClickListener,View.OnTouchListener {
     private PercentRelativeLayout view;
-    private TextView personalText,missionText,recipeText,breakfastText,lunchText,supperText;
-    public TextView circleText,deviceStatusText,openAppText,openAppButton,calStillText,unitText,failedText,calText,stepText,noMission;
-    public LinearLayout manBar,breakfastLayout,lunchLayout,supperLayout,morningTitle,noonTitle,afternoonTitle,completeLayout;
-    public RelativeLayout bottomLayout;
+    public TextView personalText,missionText,recipeText,circleText,openAppText,openAppButton,
+            calStillText,unitText,failedText,calText,stepText,noMission,recipeContent,recipeScience,recipeTypeText;
+    public LinearLayout manBar,completeLayout;
+    public RelativeLayout bottomLayout,recipeLayout,homeRecipeLayout;
     public Handler handler;
     public HomeAnim homeAnim;
     public HomeCurveView curveView;
     public MissionProgressView progressView;
-    private ActionBarLayout recipeBar;
     private float startX,startY;
     private boolean hasCancle,isHome;
-    public ImageView shareImage,refreshImage;
+    public ImageView shareImage,refreshImage,recipeImage,sunImage;
     private LayoutTransition disApperTransition,apperTransition;
     public Animation rotateAnim;
 
@@ -112,9 +112,9 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
             hideHomeView();
             circleText.setEnabled(false);
             //在执行LayoutTransition动画时会闪烁，所以先让他的透明度为零
-            recipeText.setAlpha(0);
-            recipeText.setVisibility(View.VISIBLE);
-            new Handler().postDelayed(new Runnable() {
+//            recipeText.setAlpha(0);
+//            recipeText.setVisibility(View.VISIBLE);
+              new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     isHome = false;
@@ -164,17 +164,16 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         curveView = (HomeCurveView) view.findViewById(R.id.homeCurveView);
         refreshImage = (ImageView) view.findViewById(R.id.refresh_image);
         bottomLayout = (RelativeLayout) view.findViewById(R.id.home_bottom_layout);
-        recipeBar = (ActionBarLayout) view.findViewById(R.id.recipe_bar);
-        recipeText = (TextView) view.findViewById(R.id.recipe_text);
-        breakfastLayout = (LinearLayout) view.findViewById(R.id.breakfast_layout);
-        lunchLayout = (LinearLayout) view.findViewById(R.id.lunch_layout);
-        supperLayout = (LinearLayout) view.findViewById(R.id.supper_layout);
-        morningTitle = (LinearLayout) view.findViewById(R.id.morning_title);
-        noonTitle = (LinearLayout) view.findViewById(R.id.noon_title);
-        afternoonTitle = (LinearLayout) view.findViewById(R.id.afternoon_title);
-        breakfastText = (TextView) view.findViewById(R.id.breakfast_text);
-        lunchText = (TextView) view.findViewById(R.id.lunch_text);
-        supperText = (TextView) view.findViewById(R.id.supper_text);
+        homeRecipeLayout = (RelativeLayout) view.findViewById(R.id.home_recipe_layout);
+
+        recipeLayout = (RelativeLayout) view.findViewById(R.id.recipe_layout);
+        recipeContent = (TextView) recipeLayout.findViewById(R.id.recipe_content_text);
+        recipeText = (TextView) recipeLayout.findViewById(R.id.recipe_text);
+        recipeScience = (TextView) recipeLayout.findViewById(R.id.science_text);
+        recipeImage = (ImageView) recipeLayout.findViewById(R.id.food_image);
+        sunImage = (ImageView) recipeLayout.findViewById(R.id.sun_image);
+        recipeTypeText = (TextView) recipeLayout.findViewById(R.id.recipeType_text);
+
         progressView = (MissionProgressView) view.findViewById(R.id.mission_progress);
         noMission = (TextView) view.findViewById(R.id.home_no_mission_text);
         completeLayout = (LinearLayout) view.findViewById(R.id.home_complete_layout);
@@ -208,13 +207,11 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
         apperTransition = new LayoutTransition();
         apperTransition.setAnimator(LayoutTransition.APPEARING, apperAnim);
 
-        recipeBar.setLayoutTransition(disApperTransition);
         bottomLayout.setLayoutTransition(disApperTransition);
         bottomLayout.setLayoutTransition(apperTransition);
-        recipeBar.setLayoutTransition(apperTransition);
-        breakfastLayout.setLayoutTransition(apperTransition);
-        lunchLayout.setLayoutTransition(apperTransition);
-        supperLayout.setLayoutTransition(apperTransition);
+        homeRecipeLayout.setLayoutTransition(disApperTransition);
+        homeRecipeLayout.setLayoutTransition(apperTransition);
+
     }
     /**
      * 隐藏视图
@@ -238,19 +235,10 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
      */
     private void showRecipe(boolean gonnaShow){
         if(gonnaShow){
-            morningTitle.setVisibility(View.VISIBLE);
-            noonTitle.setVisibility(View.VISIBLE);
-            afternoonTitle.setVisibility(View.VISIBLE);
-            breakfastText.setVisibility(View.VISIBLE);
-            lunchText.setVisibility(View.VISIBLE);
-            supperText.setVisibility(View.VISIBLE);
+            ((HomeActivity) getActivity()).setRecipeData();
+            recipeLayout.setVisibility(View.VISIBLE);
         } else {
-            morningTitle.setVisibility(View.GONE);
-            noonTitle.setVisibility(View.GONE);
-            afternoonTitle.setVisibility(View.GONE);
-            breakfastText.setVisibility(View.GONE);
-            lunchText.setVisibility(View.GONE);
-            supperText.setVisibility(View.GONE);
+            recipeLayout.setVisibility(View.INVISIBLE);
         }
     }
     /**
@@ -263,7 +251,6 @@ public class HomeFragment extends Fragment implements OnClickListener,View.OnTou
                 //自动执行CurveAnim1
                 homeAnim.startCurveAnim2(false);
                 curveView.setEnabled(false);
-                recipeText.setVisibility(View.INVISIBLE);
                 showRecipe(false);
                 showHomeView();
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

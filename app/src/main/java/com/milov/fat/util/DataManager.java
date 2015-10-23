@@ -310,13 +310,13 @@ public class DataManager {
             Sheet sheet = null ;
             switch (dataType){
                 case RECIPE:
-                    sheet = gender==DataManager.MALE ? book.getSheet(2) : book.getSheet(1);
+                    sheet = gender==DataManager.MALE ? book.getSheet(1) : book.getSheet(0);
                     break;
                 case CAL:
-                    sheet = gender==DataManager.MALE ? book.getSheet(4) : book.getSheet(3);
+                    sheet = gender==DataManager.MALE ? book.getSheet(3) : book.getSheet(2);
                     break;
                 case SCIENCE:
-                    sheet = book.getSheet(5);
+                    sheet = book.getSheet(4);
                     break;
             }
             int row = age > 60 ? 6 : age/10;

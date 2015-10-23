@@ -74,9 +74,9 @@ public class MissionProgressView extends View {
 
     private void drawProgress(Canvas canvas){
         //画深色区域
-        canvas.drawRect(strokeWidth,strokeWidth,(length-strokeWidth)*(completeDays/totalDays),height,darkBluePaint);
+        canvas.drawRect(strokeWidth*3/2,strokeWidth,(length-strokeWidth*3/2)*(completeDays/totalDays),height,darkBluePaint);
         //画浅色区域,覆盖一部分深色区域
-        canvas.drawRect(strokeWidth,strokeWidth,(length-strokeWidth)*(reachDays/totalDays),height,bluePaint);
+        canvas.drawRect(strokeWidth*3/2,strokeWidth,(length-strokeWidth*3/2)*(reachDays/totalDays),height,bluePaint);
         //画文字
         canvas.drawText(
                 "达标"+(int)reachDays+"天 / 未达标"+(int)(completeDays-reachDays)+"天 / 剩余"+(int)(totalDays-completeDays)+"天",

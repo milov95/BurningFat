@@ -64,7 +64,7 @@ public class MissionFragment extends Fragment implements View.OnClickListener {
             period.setText(dataManager.getMissonData(DataManager.PERIOD)+"天");
             completeDays.setText(dataManager.getMissonData(DataManager.COMPLETE_DAYS)+"天");
             reachDays.setText(dataManager.getMissonData(DataManager.REACH_DAYS)+"天");
-            reachRates.setText(0+"%");
+            reachRates.setText(((float)dataManager.getMissonData(DataManager.REACH_DAYS))/dataManager.getMissonData(DataManager.COMPLETE_DAYS)+"%");
             suggest.setText("根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗达标值为"+dataManager.getMissonData(DataManager.DAILY_GOAL)+"千卡");
         } else {
             addMission.setVisibility(View.VISIBLE);

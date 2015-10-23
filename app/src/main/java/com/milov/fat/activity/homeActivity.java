@@ -43,6 +43,8 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class HomeActivity extends Activity implements HomeFragment.HomeFragClickListener,
@@ -557,6 +559,45 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         api.registerApp(APP_ID);
     }
 
+    /**
+     * 设置食谱数据
+     */
+    public void setRecipeData(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        if( hour > 21 && hour < 0) {
+            homeFragment.recipeImage.setImageResource(R.drawable.breakfast_1);
+            homeFragment.sunImage.setImageResource(R.drawable.morning);
+            homeFragment.recipeTypeText.setText("明天的早餐");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE));
+        } else if( hour >= 0 && hour < 9){
+            homeFragment.recipeImage.setImageResource(R.drawable.breakfast_1);
+            homeFragment.sunImage.setImageResource(R.drawable.morning);
+            homeFragment.recipeTypeText.setText("早餐");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE));
+        } else if( hour >= 9 && hour < 14) {
+            homeFragment.recipeImage.setImageResource(R.drawable.lunch_1);
+            homeFragment.sunImage.setImageResource(R.drawable.noon);
+            homeFragment.recipeTypeText.setText("午餐");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.RECIPE));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.SCIENCE));
+        }
+        else {
+            homeFragment.recipeImage.setImageResource(R.drawable.supper_1);
+            homeFragment.sunImage.setImageResource(R.drawable.afternoon);
+            homeFragment.recipeTypeText.setText("晚餐");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.RECIPE));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.SCIENCE));
+        }
+    }
+
+    /**
+     * 分享至微信
+     * @param text
+     */
     private void shareToWeChat(String text){
 
         String s = "0";
@@ -593,6 +634,13 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         api.sendReq(req);
     }
 
+    /**
+     * 在图片上写文字
+     * @param bm 要分享的背景图片
+     * @param gText 比正普通人多消耗的卡路里
+     * @param gText2 任务剩余天数
+     * @return
+     */
     private Bitmap drawTextToBitmap(Bitmap bm,String gText,String gText2) {
         float scale = DisplayUtil.getScale(getApplicationContext());
 
@@ -626,7 +674,7 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         int y2 = (int)(bitmap.getHeight()*0.5853375 + bounds2.height()/2);
 
         canvas.drawText(gText, x1 , y1 , paint1);
-        canvas.drawText(gText2, x2 , y2 , paint2);
+        canvas.drawText(gText2, x2, y2, paint2);
 
         return bitmap;
     }
