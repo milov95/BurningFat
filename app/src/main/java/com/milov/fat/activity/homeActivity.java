@@ -554,6 +554,9 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         }
     }
 
+    /**
+     * 注册到微信
+     */
     public void regToWeChat(){
         api = WXAPIFactory.createWXAPI(this,APP_ID,false);
         api.registerApp(APP_ID);
