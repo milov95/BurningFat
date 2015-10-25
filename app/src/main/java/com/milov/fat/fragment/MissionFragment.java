@@ -18,6 +18,8 @@ import com.milov.fat.util.DataManager;
 
 import org.w3c.dom.Text;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Milov on 2015/8/23.
  */
@@ -64,8 +66,19 @@ public class MissionFragment extends Fragment implements View.OnClickListener {
             period.setText(dataManager.getMissonData(DataManager.PERIOD)+"天");
             completeDays.setText(dataManager.getMissonData(DataManager.COMPLETE_DAYS)+"天");
             reachDays.setText(dataManager.getMissonData(DataManager.REACH_DAYS)+"天");
-            reachRates.setText(((float)dataManager.getMissonData(DataManager.REACH_DAYS))/dataManager.getMissonData(DataManager.COMPLETE_DAYS)+"%");
-            suggest.setText("根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗达标值为"+dataManager.getMissonData(DataManager.DAILY_GOAL)+"千卡");
+
+            float rate = 0,rate2 = 0;
+            if(dataManager.getMissonData(DataManager.COMPLETE_DAYS)!=0 ) {
+                rate = 100 * (((float) dataManager.getMissonData(DataManager.REACH_DAYS)) / dataManager.getMissonData(DataManager.COMPLETE_DAYS));
+                if(Float.toString(rate).length()>5) {
+                    BigDecimal b = new BigDecimal(rate);
+                    rate2 = b.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
+                    rate = rate2;
+                }
+            }
+
+            reachRates.setText(rate+"%");
+            suggest.setText("根据您个人的身体素质以及任务要求，每日\n卡路里的建议消耗值为"+dataManager.getMissonData(DataManager.DAILY_GOAL)+"千卡");
         } else {
             addMission.setVisibility(View.VISIBLE);
             resetMission.setVisibility(View.GONE);

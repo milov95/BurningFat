@@ -224,9 +224,11 @@ public class DataManager {
 
     private int calculateDailyGoal(int period,int goal,int age,int gender,int height,int weight){
 
-        int eatCal = Integer.parseInt(getRecipeData(BREAKFAST, CAL));
+        int eatCal = Integer.parseInt(getRecipeData(BREAKFAST, CAL,true));
         int baseCal = getBaseConsumptionValue(age,gender,height,weight);
-
+        Log.i("eat",eatCal+"");
+        Log.i("base",baseCal+"");
+        Log.i("gooooooooal",((goal * 7700)/period) + eatCal - baseCal+"");
         return ((goal * 7700)/period) + eatCal - baseCal ;
     }
 
@@ -242,7 +244,7 @@ public class DataManager {
             Sheet normalSheet = gender==DataManager.MALE ? book.getSheet(2) : book.getSheet(3) ;
 
             baseDelta = gender==DataManager.MALE ? 82 : 56 ;
-            baseDelta = gender==DataManager.MALE ? 86 : 65 ;
+            normalDelta = gender==DataManager.MALE ? 86 : 65 ;
 
             int row = (weight-23)/5+1;
             int col = (height-50)/10+1;
@@ -256,10 +258,8 @@ public class DataManager {
             baseValue = Integer.parseInt(baseSheet.getCell(col, row).getContents())-((age-10)/10)*baseDelta;
             normalValue = Integer.parseInt(baseSheet.getCell(col, row).getContents())-((age-10)/10)*normalDelta;
 
-            selfDataEditor.putInt("normalCal",normalValue);
+            selfDataEditor.putInt("normalCal", normalValue);
             selfDataEditor.commit();
-
-            System.out.print((baseSheet.getCell(col, row)).getContents() + "基础消耗\t");
             book.close();
         } catch (Exception e) {
             System.out.println(e);
@@ -278,7 +278,7 @@ public class DataManager {
      * @param dataType RECIPE,CAL,SCIENCE
      * @return 对应类型的String数据
      */
-    public String getRecipeData(int mealType,int dataType){
+    public String getRecipeData(int mealType,int dataType,boolean dailyCal){
         String data = null;
         int typeNum;
         switch (mealType){
@@ -321,7 +321,7 @@ public class DataManager {
             }
             int row = age > 60 ? 6 : age/10;
             int col = typeNum + version ;
-            if(dataType == CAL)
+            if(dailyCal == true)
                 col = 7;
             System.out.println("当前工作表的名字:" + sheet.getName());
             System.out.println("行:" + (row+1));

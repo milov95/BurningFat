@@ -1,10 +1,15 @@
 package com.milov.fat.view;
 
 import android.content.Context;
+import android.graphics.AvoidXfermode;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Xfermode;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.util.AttributeSet;
 import android.view.View;

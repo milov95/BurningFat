@@ -151,6 +151,7 @@ public class HuaweiWearableHelper implements HomeActivity.ActivitiCallback{
         ArrayList<String> list = getMonthEachDayTime();
         for(int i = 0;i<30;i++) {
             String date = list.get(i + 1);
+            if(dataManager!=null)
             dataManager.cleanMonthData(date);
         }
     }

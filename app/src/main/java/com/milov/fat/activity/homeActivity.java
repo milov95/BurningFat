@@ -572,28 +572,28 @@ public class HomeActivity extends Activity implements HomeFragment.HomeFragClick
         if( hour > 21 && hour < 0) {
             homeFragment.recipeImage.setImageResource(R.drawable.breakfast_1);
             homeFragment.sunImage.setImageResource(R.drawable.morning);
-            homeFragment.recipeTypeText.setText("明天的早餐");
-            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE));
-            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE));
+            homeFragment.recipeTypeText.setText("明天的早餐"+"("+dataManager.getRecipeData(DataManager.BREAKFAST,DataManager.CAL,false)+"千卡)");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE,false));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE,false));
         } else if( hour >= 0 && hour < 9){
             homeFragment.recipeImage.setImageResource(R.drawable.breakfast_1);
             homeFragment.sunImage.setImageResource(R.drawable.morning);
-            homeFragment.recipeTypeText.setText("早餐");
-            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE));
-            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE));
+            homeFragment.recipeTypeText.setText("早餐"+"("+dataManager.getRecipeData(DataManager.BREAKFAST,DataManager.CAL,false)+"千卡)");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.RECIPE,false));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.BREAKFAST, DataManager.SCIENCE,false));
         } else if( hour >= 9 && hour < 14) {
             homeFragment.recipeImage.setImageResource(R.drawable.lunch_1);
             homeFragment.sunImage.setImageResource(R.drawable.noon);
-            homeFragment.recipeTypeText.setText("午餐");
-            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.RECIPE));
-            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.SCIENCE));
+            homeFragment.recipeTypeText.setText("午餐" + "(" + dataManager.getRecipeData(DataManager.LUNCH, DataManager.CAL,false) + "千卡)");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.RECIPE,false));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.LUNCH, DataManager.SCIENCE,false));
         }
         else {
             homeFragment.recipeImage.setImageResource(R.drawable.supper_1);
             homeFragment.sunImage.setImageResource(R.drawable.afternoon);
-            homeFragment.recipeTypeText.setText("晚餐");
-            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.RECIPE));
-            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.SCIENCE));
+            homeFragment.recipeTypeText.setText("晚餐"+"("+dataManager.getRecipeData(DataManager.SUPPER,DataManager.CAL,false)+"千卡)");
+            homeFragment.recipeContent.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.RECIPE,false));
+            homeFragment.recipeScience.setText(dataManager.getRecipeData(DataManager.SUPPER, DataManager.SCIENCE,false));
         }
     }
 
